@@ -1,0 +1,66 @@
+{
+  "spec": "axp",
+  "version": "0.1.0",
+  "generated_at": "2025-09-18T10:00:00Z",
+  "brand": {
+    "id": "brand_001",
+    "legal_name": "Urban Footwear GmbH",
+    "founded_year": 2011,
+    "employee_count": 480,
+    "customer_count_estimate": 55000,
+    "headquarters_country": "DE",
+    "domains": ["urban-footwear.com"],
+    "certifications": [
+      "ISO9001",
+      "ClimatePartner",
+      "Fair Wear Foundation"
+    ],
+    "independent_ratings": [
+      {
+        "source": "Trustpilot",
+        "score": 4.6,
+        "reviews": 12873,
+        "url": "https://trustpilot.com/review/urban-footwear.com"
+      },
+      {
+        "source": "Google",
+        "score": 4.4,
+        "reviews": 2034,
+        "url": "https://google.com/maps/place/urban-footwear"
+      }
+    ],
+    "csat": 0.87,
+    "nps": 54,
+    "return_rate": 0.11,
+    "service_sla": {
+      "first_response_hours": 4,
+      "resolution_hours_p50": 24
+    },
+    "unique_value_props": [
+      "Lifetime repair service",
+      "Local production in Europe",
+      "Open spare parts catalog",
+      "Custom fitting service",
+      "100% recyclable materials"
+    ],
+    "trust_factors": {
+      "badges": ["PCI DSS ready", "GDPR controls"],
+      "warranties": [
+        {
+          "name": "Extended warranty",
+          "duration_days": 730
+        },
+        {
+          "name": "Comfort guarantee",
+          "duration_days": 90
+        }
+      ],
+      "data_provenance": "signed_by_brand_key"
+    }
+  },
+  "signature": {
+    "alg": "RS256",
+    "kid": "did:web:urban-footwear.com#axp-2025",
+    "value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9...signature"
+  }
+}

@@ -1,0 +1,62 @@
+{
+  "name": "@agentic-commerce/axp-protocol",
+  "version": "0.1.0",
+  "description": "Agentic Experience Protocol - Making commerce experiences machine-readable",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "generate:types": "npx json2ts schemas/axp/*.schema.json -o src/types/",
+    "server:start": "tsx src/server/index.ts",
+    "server:dev": "tsx watch src/server/index.ts",
+    "demo:client": "tsx examples/demo-client.ts",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "lint": "eslint . --ext .ts",
+    "format": "prettier --write \"src/**/*.ts\" \"examples/**/*.ts\"",
+    "validate:schemas": "ajv compile -s schemas/axp/*.schema.json",
+    "bundle:example": "node scripts/create-bundle.js"
+  },
+  "keywords": [
+    "agentic",
+    "commerce",
+    "protocol",
+    "mcp",
+    "ai",
+    "agents",
+    "axp"
+  ],
+  "author": "Agentic Commerce Community",
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^0.6.2",
+    "ajv": "^8.17.1",
+    "fastify": "^4.26.2",
+    "fastify-cors": "^6.1.0",
+    "fastify-swagger": "^5.2.0",
+    "jsonwebtoken": "^9.0.2",
+    "nanoid": "^5.0.7",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.12",
+    "@types/jsonwebtoken": "^9.0.6",
+    "@types/node": "^20.11.30",
+    "@typescript-eslint/eslint-plugin": "^7.3.1",
+    "@typescript-eslint/parser": "^7.3.1",
+    "eslint": "^8.57.0",
+    "jest": "^29.7.0",
+    "json-schema-to-typescript": "^13.1.2",
+    "prettier": "^3.2.5",
+    "ts-jest": "^29.1.2",
+    "tsx": "^4.7.1",
+    "typescript": "^5.4.3"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/agentic-commerce/axp-protocol"
+  }
+}

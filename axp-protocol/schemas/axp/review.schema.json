@@ -1,0 +1,99 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://agentic-commerce.org/axp/v0.1/schemas/review",
+  "title": "AXP Review",
+  "description": "Normalized review format for agent-optimized ranking",
+  "type": "object",
+  "required": ["product_id", "source", "rating", "timestamp"],
+  "properties": {
+    "product_id": {
+      "type": "string",
+      "description": "Product SKU this review belongs to"
+    },
+    "source": {
+      "type": "string",
+      "description": "Review platform source"
+    },
+    "rating": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 5,
+      "description": "Star rating"
+    },
+    "title": {
+      "type": "string",
+      "maxLength": 100,
+      "description": "Review title/summary"
+    },
+    "text": {
+      "type": "string",
+      "maxLength": 5000,
+      "description": "Full review text"
+    },
+    "lang": {
+      "type": "string",
+      "pattern": "^[a-z]{2}$",
+      "description": "ISO 639-1 language code"
+    },
+    "verified_purchase": {
+      "type": "boolean",
+      "description": "Whether purchase was verified"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Review creation timestamp"
+    },
+    "aspects": {
+      "type": "object",
+      "description": "Aspect-based sentiment scores (0-1)",
+      "properties": {
+        "comfort": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "build": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "style": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "value": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "durability": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "fit": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      },
+      "additionalProperties": {
+        "type": "number",
+        "minimum": 0,
+        "maximum": 1
+      }
+    },
+    "helpful_votes": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Number of helpful votes"
+    },
+    "total_votes": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Total number of votes"
+    }
+  }
+}

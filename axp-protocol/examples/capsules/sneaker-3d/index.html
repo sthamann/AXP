@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Sneaker Configurator - AXP Capsule</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            max-width: 100%;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .viewer {
+            flex: 1;
+            position: relative;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            background: white;
+        }
+
+        #canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        .controls {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 16px 24px;
+            display: flex;
+            gap: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .control-label {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #666;
+            font-weight: 600;
+        }
+
+        .color-options {
+            display: flex;
+            gap: 8px;
+        }
+
+        .color-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 3px solid transparent;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .color-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .color-btn.active {
+            border-color: #333;
+            box-shadow: 0 0 0 2px white, 0 0 0 4px #333;
+        }
+
+        .color-btn[data-color="red"] {
+            background: linear-gradient(135deg, #ff6b6b, #c92a2a);
+        }
+
+        .color-btn[data-color="black"] {
+            background: linear-gradient(135deg, #495057, #212529);
+        }
+
+        .color-btn[data-color="white"] {
+            background: linear-gradient(135deg, #f8f9fa, #dee2e6);
+        }
+
+        .color-btn[data-color="navy"] {
+            background: linear-gradient(135deg, #364fc7, #1c2458);
+        }
+
+        .size-selector {
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: 2px solid #e0e0e0;
+            background: white;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .size-selector:hover {
+            border-color: #667eea;
+        }
+
+        .size-selector:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .action-btn {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            align-self: flex-end;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 18px;
+            color: #666;
+        }
+
+        .info-panel {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 16px;
+            max-width: 200px;
+        }
+
+        .product-name {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .product-price {
+            font-size: 24px;
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            .controls {
+                flex-direction: column;
+                width: calc(100% - 40px);
+            }
+            
+            .info-panel {
+                position: static;
+                margin-bottom: 20px;
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="viewer">
+            <div class="info-panel">
+                <div class="product-name">Classic High Top</div>
+                <div class="product-price">€129.90</div>
+            </div>
+            
+            <canvas id="canvas"></canvas>
+            <div class="loading" id="loading">Loading 3D model...</div>
+            
+            <div class="controls">
+                <div class="control-group">
+                    <div class="control-label">Color</div>
+                    <div class="color-options">
+                        <div class="color-btn active" data-color="red" title="Red"></div>
+                        <div class="color-btn" data-color="black" title="Black"></div>
+                        <div class="color-btn" data-color="white" title="White"></div>
+                        <div class="color-btn" data-color="navy" title="Navy"></div>
+                    </div>
+                </div>
+                
+                <div class="control-group">
+                    <div class="control-label">Size (EU)</div>
+                    <select class="size-selector" id="sizeSelector">
+                        <option value="39">39</option>
+                        <option value="40">40</option>
+                        <option value="41">41</option>
+                        <option value="42" selected>42</option>
+                        <option value="43">43</option>
+                        <option value="44">44</option>
+                        <option value="45">45</option>
+                    </select>
+                </div>
+                
+                <button class="action-btn" id="addToCart">Add to Cart</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // AXP Capsule Communication Protocol
+        class CapsuleAPI {
+            constructor() {
+                this.state = {
+                    color: 'red',
+                    size: '42',
+                    rotation: 0,
+                    ready: false
+                };
+                
+                this.setupMessageHandler();
+                this.init();
+            }
+
+            setupMessageHandler() {
+                window.addEventListener('message', (event) => {
+                    // In production, validate event.origin
+                    const message = event.data;
+                    
+                    switch(message.type) {
+                        case 'init':
+                            this.handleInit(message);
+                            break;
+                        case 'configure':
+                            this.handleConfigure(message.params);
+                            break;
+                        case 'set_variant':
+                            this.handleSetVariant(message.sku, message.params);
+                            break;
+                        case 'request_quote':
+                            this.handleRequestQuote();
+                            break;
+                    }
+                });
+            }
+
+            handleInit(message) {
+                console.log('Capsule initialized with correlation ID:', message.correlationId);
+                this.sendMessage({ type: 'ready' });
+            }
+
+            handleConfigure(params) {
+                if (params.color) {
+                    this.updateColor(params.color);
+                }
+                if (params.size) {
+                    this.updateSize(params.size);
+                }
+                this.sendStateChanged();
+            }
+
+            handleSetVariant(sku, params) {
+                console.log('Setting variant:', sku, params);
+                this.handleConfigure(params);
+            }
+
+            handleRequestQuote() {
+                const quote = {
+                    sku: `sku_123_${this.state.color}_${this.state.size}`,
+                    color: this.state.color,
+                    size: this.state.size,
+                    price: 129.90,
+                    currency: 'EUR'
+                };
+                this.sendMessage({
+                    type: 'quote_response',
+                    quote
+                });
+            }
+
+            updateColor(color) {
+                this.state.color = color;
+                document.querySelectorAll('.color-btn').forEach(btn => {
+                    btn.classList.toggle('active', btn.dataset.color === color);
+                });
+                this.render3D();
+            }
+
+            updateSize(size) {
+                this.state.size = size;
+                document.getElementById('sizeSelector').value = size;
+            }
+
+            sendMessage(message) {
+                if (window.parent !== window) {
+                    window.parent.postMessage(message, '*');
+                }
+            }
+
+            sendStateChanged() {
+                this.sendMessage({
+                    type: 'state_changed',
+                    state: this.state
+                });
+            }
+
+            sendAddToCart(quantity = 1) {
+                this.sendMessage({
+                    type: 'add_to_cart',
+                    sku: `sku_123_${this.state.color}_${this.state.size}`,
+                    quantity
+                });
+            }
+
+            sendTelemetry(event, data) {
+                this.sendMessage({
+                    type: 'telemetry',
+                    event,
+                    data
+                });
+            }
+
+            init() {
+                // Initialize 3D viewer
+                this.setup3D();
+                
+                // Setup UI event handlers
+                document.querySelectorAll('.color-btn').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        this.updateColor(btn.dataset.color);
+                        this.sendStateChanged();
+                        this.sendTelemetry('color_changed', { color: btn.dataset.color });
+                    });
+                });
+
+                document.getElementById('sizeSelector').addEventListener('change', (e) => {
+                    this.updateSize(e.target.value);
+                    this.sendStateChanged();
+                    this.sendTelemetry('size_changed', { size: e.target.value });
+                });
+
+                document.getElementById('addToCart').addEventListener('click', () => {
+                    this.sendAddToCart(1);
+                    this.sendTelemetry('add_to_cart_clicked', {
+                        color: this.state.color,
+                        size: this.state.size
+                    });
+                });
+            }
+
+            setup3D() {
+                const canvas = document.getElementById('canvas');
+                const ctx = canvas.getContext('2d');
+                
+                // Set canvas size
+                const resizeCanvas = () => {
+                    canvas.width = canvas.offsetWidth;
+                    canvas.height = canvas.offsetHeight;
+                };
+                resizeCanvas();
+                window.addEventListener('resize', resizeCanvas);
+
+                // Hide loading indicator
+                document.getElementById('loading').style.display = 'none';
+                
+                // Simple 3D simulation (in production, use Three.js or similar)
+                this.render3D();
+                
+                // Auto-rotate
+                setInterval(() => {
+                    this.state.rotation += 1;
+                    this.render3D();
+                }, 50);
+            }
+
+            render3D() {
+                const canvas = document.getElementById('canvas');
+                const ctx = canvas.getContext('2d');
+                const centerX = canvas.width / 2;
+                const centerY = canvas.height / 2;
+                
+                // Clear canvas
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                // Draw shadow
+                ctx.fillStyle = 'rgba(0,0,0,0.1)';
+                ctx.beginPath();
+                ctx.ellipse(centerX, centerY + 100, 120, 40, 0, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Draw sneaker (simplified representation)
+                ctx.save();
+                ctx.translate(centerX, centerY);
+                ctx.rotate((this.state.rotation * Math.PI) / 180);
+                
+                // Sneaker base color
+                const colors = {
+                    red: '#ff6b6b',
+                    black: '#2e2e2e',
+                    white: '#f8f9fa',
+                    navy: '#364fc7'
+                };
+                
+                // Draw sole
+                ctx.fillStyle = '#e0e0e0';
+                ctx.fillRect(-100, 40, 200, 30);
+                
+                // Draw upper
+                ctx.fillStyle = colors[this.state.color];
+                ctx.beginPath();
+                ctx.moveTo(-100, 40);
+                ctx.lineTo(-100, -40);
+                ctx.quadraticCurveTo(-100, -60, -80, -60);
+                ctx.lineTo(80, -60);
+                ctx.quadraticCurveTo(100, -60, 100, -40);
+                ctx.lineTo(100, 40);
+                ctx.closePath();
+                ctx.fill();
+                
+                // Draw laces
+                ctx.strokeStyle = '#fff';
+                ctx.lineWidth = 3;
+                for (let i = -60; i <= 60; i += 30) {
+                    ctx.beginPath();
+                    ctx.moveTo(i, -30);
+                    ctx.lineTo(i, -10);
+                    ctx.stroke();
+                }
+                
+                // Draw logo/detail
+                ctx.fillStyle = 'rgba(255,255,255,0.3)';
+                ctx.beginPath();
+                ctx.arc(0, 0, 25, 0, Math.PI * 2);
+                ctx.fill();
+                
+                ctx.restore();
+                
+                // Draw size label
+                ctx.fillStyle = '#666';
+                ctx.font = '14px sans-serif';
+                ctx.fillText(`EU ${this.state.size}`, 20, canvas.height - 20);
+            }
+        }
+
+        // Initialize the capsule
+        const capsule = new CapsuleAPI();
+    </script>
+</body>
+</html>

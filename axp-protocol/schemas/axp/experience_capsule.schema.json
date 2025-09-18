@@ -1,0 +1,149 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://agentic-commerce.org/axp/v0.1/schemas/experience_capsule",
+  "title": "AXP Experience Capsule",
+  "description": "Interactive micro-experience with sandboxing policy",
+  "type": "object",
+  "required": ["id", "name", "version", "entry", "surfaces", "sandbox_policy", "api"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Unique capsule identifier"
+    },
+    "name": {
+      "type": "string",
+      "description": "Human-readable capsule name"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "description": "Capsule version in SemVer format"
+    },
+    "entry": {
+      "type": "object",
+      "properties": {
+        "html": {
+          "type": "string",
+          "description": "Entry HTML file path"
+        },
+        "js": {
+          "type": "string",
+          "description": "Entry JavaScript file path"
+        }
+      },
+      "minProperties": 1
+    },
+    "surfaces": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": ["canvas3d", "html", "ar", "vr", "configurator"]
+      },
+      "minItems": 1,
+      "description": "Supported rendering surfaces"
+    },
+    "sandbox_policy": {
+      "type": "object",
+      "required": ["dom", "storage", "network", "lifetime_seconds"],
+      "properties": {
+        "dom": {
+          "type": "boolean",
+          "description": "Allow DOM manipulation"
+        },
+        "storage": {
+          "type": "string",
+          "enum": ["none", "memory", "session"],
+          "description": "Storage access level"
+        },
+        "network": {
+          "type": "object",
+          "required": ["block_all_others"],
+          "properties": {
+            "allow": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "format": "uri"
+              },
+              "description": "Allowed network endpoints"
+            },
+            "block_all_others": {
+              "type": "boolean",
+              "description": "Block all non-allowed endpoints"
+            }
+          }
+        },
+        "lifetime_seconds": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 3600,
+          "description": "Maximum capsule lifetime"
+        },
+        "permissions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["camera", "microphone", "geolocation", "notifications", "clipboard"]
+          },
+          "description": "Required browser permissions"
+        }
+      }
+    },
+    "api": {
+      "type": "object",
+      "required": ["inbound_events", "outbound_events"],
+      "properties": {
+        "inbound_events": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Events the capsule can receive"
+        },
+        "outbound_events": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Events the capsule can emit"
+        }
+      }
+    },
+    "resources": {
+      "type": "object",
+      "properties": {
+        "max_memory_mb": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 512,
+          "default": 128
+        },
+        "max_cpu_percent": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100,
+          "default": 25
+        }
+      }
+    },
+    "signature": {
+      "type": "object",
+      "required": ["alg", "value"],
+      "properties": {
+        "alg": {
+          "type": "string",
+          "enum": ["RS256", "ES256", "EdDSA"],
+          "description": "Signature algorithm"
+        },
+        "kid": {
+          "type": "string",
+          "description": "Key identifier"
+        },
+        "value": {
+          "type": "string",
+          "description": "Base64url encoded signature"
+        }
+      }
+    }
+  }
+}

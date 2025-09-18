@@ -1,0 +1,420 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://agentic-commerce.org/axp/v0.1/schemas/product",
+  "title": "AXP Product",
+  "description": "Complete product representation with experiences and trust signals",
+  "type": "object",
+  "required": ["product"],
+  "properties": {
+    "product": {
+      "type": "object",
+      "required": ["id", "title", "price", "availability"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique product identifier (SKU)"
+        },
+        "parent_id": {
+          "type": ["string", "null"],
+          "description": "Parent product ID for variants"
+        },
+        "title": {
+          "type": "string",
+          "description": "Product title"
+        },
+        "short_desc": {
+          "type": "string",
+          "maxLength": 200,
+          "description": "Brief product description"
+        },
+        "tech_specs": {
+          "type": "object",
+          "properties": {
+            "material": {
+              "type": "string"
+            },
+            "weight_grams": {
+              "type": "number",
+              "minimum": 0
+            },
+            "sizes": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "care": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": true
+        },
+        "price": {
+          "type": "object",
+          "required": ["currency", "value"],
+          "properties": {
+            "currency": {
+              "type": "string",
+              "pattern": "^[A-Z]{3}$",
+              "description": "ISO 4217 currency code"
+            },
+            "value": {
+              "type": "number",
+              "minimum": 0,
+              "description": "Price value"
+            }
+          }
+        },
+        "availability": {
+          "type": "object",
+          "required": ["state"],
+          "properties": {
+            "state": {
+              "type": "string",
+              "enum": ["in_stock", "out_of_stock", "preorder", "discontinued"],
+              "description": "Availability state"
+            },
+            "quantity": {
+              "type": "integer",
+              "minimum": 0,
+              "description": "Available quantity"
+            }
+          }
+        },
+        "media": {
+          "type": "object",
+          "properties": {
+            "images": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["url"],
+                "properties": {
+                  "url": {
+                    "type": "string",
+                    "format": "uri"
+                  },
+                  "machine_captions": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "required": ["lang", "text"],
+                      "properties": {
+                        "lang": {
+                          "type": "string",
+                          "pattern": "^[a-z]{2}$"
+                        },
+                        "text": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  },
+                  "embeddings": {
+                    "type": "object",
+                    "properties": {
+                      "clip": {
+                        "type": "object",
+                        "required": ["dim", "vector"],
+                        "properties": {
+                          "dim": {
+                            "type": "integer",
+                            "minimum": 1
+                          },
+                          "vector": {
+                            "type": "string",
+                            "description": "Base64 encoded float array"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "documents": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["url"],
+                "properties": {
+                  "url": {
+                    "type": "string",
+                    "format": "uri"
+                  },
+                  "semantic_summary": {
+                    "type": "object",
+                    "required": ["lang", "text"],
+                    "properties": {
+                      "lang": {
+                        "type": "string",
+                        "pattern": "^[a-z]{2}$"
+                      },
+                      "text": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "checksum_sha256": {
+                    "type": "string",
+                    "pattern": "^[a-f0-9]{64}$"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "experiences": {
+          "type": "object",
+          "properties": {
+            "capsules": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["id", "title", "capsule_uri", "modality"],
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "title": {
+                    "type": "string"
+                  },
+                  "capsule_uri": {
+                    "type": "string",
+                    "format": "uri"
+                  },
+                  "modality": {
+                    "type": "string",
+                    "enum": ["canvas3d", "html", "ar", "vr", "configurator"]
+                  },
+                  "preferred_size": {
+                    "type": "object",
+                    "properties": {
+                      "width": {
+                        "type": "integer",
+                        "minimum": 100
+                      },
+                      "height": {
+                        "type": "integer",
+                        "minimum": 100
+                      }
+                    }
+                  },
+                  "params_schema": {
+                    "type": "object",
+                    "description": "JSON Schema for capsule parameters"
+                  }
+                }
+              }
+            },
+            "demo_videos": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["url"],
+                "properties": {
+                  "url": {
+                    "type": "string",
+                    "format": "uri"
+                  },
+                  "caption": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "soft_signals": {
+          "type": "object",
+          "properties": {
+            "uniqueness_score": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "craftsmanship_score": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "sustainability_score": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "innovation_score": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "evidence": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["kind", "name"],
+                "properties": {
+                  "kind": {
+                    "type": "string",
+                    "enum": ["certification", "award", "audit_report", "lab_test", "press_mention"]
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "url": {
+                    "type": "string",
+                    "format": "uri"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "trust_signals": {
+          "type": "object",
+          "properties": {
+            "review_summary": {
+              "type": "object",
+              "properties": {
+                "avg_rating": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 5
+                },
+                "count_total": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "top_positive": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "top_negative": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            "return_reasons": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["reason", "share"],
+                "properties": {
+                  "reason": {
+                    "type": "string",
+                    "enum": ["size_issue", "damaged", "color_mismatch", "quality_expectation", "changed_mind", "shipping_delay"]
+                  },
+                  "share": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1
+                  }
+                }
+              }
+            },
+            "return_rate": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "warranty_days": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        },
+        "intent_signals": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["intent", "share"],
+            "properties": {
+              "intent": {
+                "type": "string",
+                "enum": ["gift", "daily_commute", "hobby", "professional_use", "travel", "fashion", "sport", "basketball"]
+              },
+              "share": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              }
+            }
+          }
+        },
+        "policies": {
+          "type": "object",
+          "properties": {
+            "shipping": {
+              "type": "object",
+              "properties": {
+                "regions": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "pattern": "^[A-Z]{2}$"
+                  }
+                },
+                "days": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              }
+            },
+            "returns": {
+              "type": "object",
+              "properties": {
+                "days": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "restocking_fee": {
+                  "type": "number",
+                  "minimum": 0
+                }
+              }
+            }
+          }
+        },
+        "provenance": {
+          "type": "object",
+          "required": ["brand_id", "last_verified"],
+          "properties": {
+            "brand_id": {
+              "type": "string"
+            },
+            "last_verified": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "signature": {
+              "type": "string",
+              "description": "Base64url encoded signature"
+            }
+          }
+        },
+        "agent_ranking_hint": {
+          "type": "object",
+          "properties": {
+            "primary": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "secondary": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

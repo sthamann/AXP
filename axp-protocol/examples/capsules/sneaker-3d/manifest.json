@@ -1,0 +1,52 @@
+{
+  "id": "cap_sneaker_3d",
+  "name": "3D Sneaker Configurator",
+  "version": "0.1.0",
+  "entry": {
+    "html": "index.html"
+  },
+  "surfaces": ["canvas3d", "html"],
+  "sandbox_policy": {
+    "dom": true,
+    "storage": "none",
+    "network": {
+      "allow": [
+        "https://cdn.urban-footwear.com/assets/",
+        "https://cdn.urban-footwear.com/models/"
+      ],
+      "block_all_others": true
+    },
+    "lifetime_seconds": 600,
+    "permissions": []
+  },
+  "api": {
+    "inbound_events": [
+      "init",
+      "configure",
+      "set_variant",
+      "request_quote"
+    ],
+    "outbound_events": [
+      "ready",
+      "state_changed",
+      "add_to_cart",
+      "telemetry",
+      "quote_response"
+    ]
+  },
+  "resources": {
+    "max_memory_mb": 128,
+    "max_cpu_percent": 25
+  },
+  "metadata": {
+    "author": "Urban Footwear GmbH",
+    "description": "Interactive 3D configurator for Classic High Top Sneaker",
+    "tags": ["3d", "configurator", "sneaker", "footwear"],
+    "preview_image": "preview.png"
+  },
+  "signature": {
+    "alg": "RS256",
+    "kid": "did:web:urban-footwear.com#capsule-key-2025",
+    "value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9...capsule_signature"
+  }
+}

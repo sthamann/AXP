@@ -1,0 +1,200 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://agentic-commerce.org/axp/v0.1/schemas/brand_profile",
+  "title": "AXP Brand Profile",
+  "description": "Brand identity with trust signals and operational metrics",
+  "type": "object",
+  "required": ["spec", "version", "generated_at", "brand"],
+  "properties": {
+    "spec": {
+      "type": "string",
+      "const": "axp",
+      "description": "Protocol identifier"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "description": "Protocol version in SemVer format"
+    },
+    "generated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp of generation"
+    },
+    "brand": {
+      "type": "object",
+      "required": ["id", "legal_name", "domains"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique brand identifier"
+        },
+        "legal_name": {
+          "type": "string",
+          "description": "Legal entity name"
+        },
+        "founded_year": {
+          "type": "integer",
+          "minimum": 1800,
+          "maximum": 2100,
+          "description": "Year the company was founded"
+        },
+        "employee_count": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Number of employees"
+        },
+        "customer_count_estimate": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Estimated number of customers"
+        },
+        "headquarters_country": {
+          "type": "string",
+          "pattern": "^[A-Z]{2}$",
+          "description": "ISO 3166-1 alpha-2 country code"
+        },
+        "domains": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "hostname"
+          },
+          "minItems": 1,
+          "description": "Associated domain names"
+        },
+        "certifications": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Quality and compliance certifications"
+        },
+        "independent_ratings": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["source", "score"],
+            "properties": {
+              "source": {
+                "type": "string",
+                "description": "Rating platform name"
+              },
+              "score": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 5,
+                "description": "Rating score"
+              },
+              "reviews": {
+                "type": "integer",
+                "minimum": 0,
+                "description": "Number of reviews"
+              },
+              "url": {
+                "type": "string",
+                "format": "uri",
+                "description": "Link to rating page"
+              }
+            }
+          },
+          "description": "Third-party ratings"
+        },
+        "csat": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Customer satisfaction score (0-1)"
+        },
+        "nps": {
+          "type": "integer",
+          "minimum": -100,
+          "maximum": 100,
+          "description": "Net Promoter Score"
+        },
+        "return_rate": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Overall return rate (0-1)"
+        },
+        "service_sla": {
+          "type": "object",
+          "properties": {
+            "first_response_hours": {
+              "type": "number",
+              "minimum": 0,
+              "description": "Average first response time in hours"
+            },
+            "resolution_hours_p50": {
+              "type": "number",
+              "minimum": 0,
+              "description": "Median resolution time in hours"
+            }
+          }
+        },
+        "unique_value_props": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Key differentiators and value propositions"
+        },
+        "trust_factors": {
+          "type": "object",
+          "properties": {
+            "badges": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": ["PCI DSS ready", "GDPR controls", "SOC2", "ISO27001"]
+              },
+              "description": "Security and compliance badges"
+            },
+            "warranties": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["name", "duration_days"],
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "Warranty name"
+                  },
+                  "duration_days": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "description": "Warranty duration in days"
+                  }
+                }
+              }
+            },
+            "data_provenance": {
+              "type": "string",
+              "description": "Data authentication method"
+            }
+          }
+        }
+      }
+    },
+    "signature": {
+      "type": "object",
+      "required": ["alg", "value"],
+      "properties": {
+        "alg": {
+          "type": "string",
+          "enum": ["RS256", "ES256", "EdDSA"],
+          "description": "Signature algorithm"
+        },
+        "kid": {
+          "type": "string",
+          "description": "Key identifier"
+        },
+        "value": {
+          "type": "string",
+          "description": "Base64url encoded signature"
+        }
+      }
+    }
+  }
+}
