@@ -8,6 +8,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Nike Shoe V2 3D Experience Capsule with USDZ model support
+- Test harness for AXP Capsule development and debugging
+
+### Updated
+- Enhanced 3D sneaker configurator with real model viewer implementation
+- Migrated from canvas-based simulation to model-viewer 3.3.0
+- Added Nike branding and premium visual design
+- Implemented dynamic pricing based on colorway selection
+
+## [0.1.0] - 2025-09-18
+
+### Added
 - Complete AXP v0.1.0 protocol specification
 - JSON Schema definitions for all data objects
 - TypeScript type definitions

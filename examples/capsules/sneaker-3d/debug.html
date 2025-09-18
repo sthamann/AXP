@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nike GLB Debug Viewer</title>
+    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.3.0/model-viewer.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: monospace;
+            background: #222;
+            color: white;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        #viewer {
+            flex: 1;
+            width: 100%;
+            background: linear-gradient(45deg, #333 25%, #444 25%, #444 50%, #333 50%, #333 75%, #444 75%, #444);
+            background-size: 20px 20px;
+        }
+        
+        .controls {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            background: rgba(0,0,0,0.9);
+            padding: 15px;
+            border-radius: 5px;
+            max-width: 400px;
+            z-index: 1000;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .control-group {
+            margin: 10px 0;
+            padding: 10px 0;
+            border-bottom: 1px solid #555;
+        }
+        
+        button {
+            background: #FF6900;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            margin: 2px;
+            cursor: pointer;
+            border-radius: 3px;
+            font-size: 12px;
+        }
+        
+        button:hover {
+            background: #FF8C42;
+        }
+        
+        .info {
+            background: rgba(0,50,0,0.3);
+            padding: 5px;
+            margin: 5px 0;
+            border-radius: 3px;
+            font-size: 11px;
+        }
+        
+        .error {
+            background: rgba(100,0,0,0.3);
+            color: #ff6666;
+        }
+        
+        input[type="range"] {
+            width: 100%;
+        }
+        
+        .status {
+            color: #0f0;
+            font-weight: bold;
+        }
+        
+        #stats {
+            font-size: 10px;
+            line-height: 1.4;
+        }
+    </style>
+</head>
+<body>
+    <model-viewer 
+        id="viewer"
+        src="nike.glb"
+        camera-controls
+        auto-rotate-delay="3000"
+        shadow-intensity="1"
+        exposure="1"
+        tone-mapping="neutral"
+        environment-image="neutral">
+    </model-viewer>
+    
+    <div class="controls">
+        <h3>🔧 Nike GLB Debug Controls</h3>
+        
+        <div class="control-group">
+            <strong>Status:</strong> <span id="status" class="status">Loading...</span><br>
+            <strong>File:</strong> nike.glb<br>
+            <strong>Progress:</strong> <span id="progress">0%</span>
+        </div>
+        
+        <div class="control-group">
+            <strong>Quick Actions:</strong><br>
+            <button onclick="autoFrame()">🎯 Auto Frame</button>
+            <button onclick="resetCamera()">📷 Reset Camera</button>
+            <button onclick="toggleRotate()">🔄 Toggle Rotate</button>
+            <button onclick="centerModel()">⭕ Center Model</button>
+        </div>
+        
+        <div class="control-group">
+            <strong>Camera Presets:</strong><br>
+            <button onclick="setView('0deg 90deg 1m')">Front</button>
+            <button onclick="setView('90deg 90deg 1m')">Side</button>
+            <button onclick="setView('0deg 0deg 1m')">Top</button>
+            <button onclick="setView('0deg 180deg 1m')">Bottom</button>
+            <button onclick="setView('45deg 55deg 2m')">Default</button>
+            <button onclick="setView('0deg 75deg auto')">Auto Dist</button>
+        </div>
+        
+        <div class="control-group">
+            <strong>Camera Distance:</strong><br>
+            <button onclick="zoom(0.5)">🔍 Zoom 50%</button>
+            <button onclick="zoom(1)">🔍 Zoom 100%</button>
+            <button onclick="zoom(2)">🔍 Zoom 200%</button>
+            <button onclick="zoom(5)">🔍 Zoom 500%</button>
+            <button onclick="zoom(10)">🔍 Zoom 1000%</button>
+            <button onclick="zoom(0.1)">🔍 Zoom 10%</button>
+        </div>
+        
+        <div class="control-group">
+            <strong>Field of View:</strong><br>
+            <input type="range" id="fov" min="10" max="120" value="30" 
+                   oninput="setFOV(this.value)">
+            <span id="fovValue">30deg</span>
+        </div>
+        
+        <div class="control-group">
+            <strong>Exposure:</strong><br>
+            <input type="range" id="exposure" min="0" max="3" step="0.1" value="1" 
+                   oninput="setExposure(this.value)">
+            <span id="exposureValue">1</span>
+        </div>
+        
+        <div class="control-group">
+            <strong>Model Info:</strong>
+            <div id="stats" class="info">Waiting for model...</div>
+        </div>
+        
+        <div class="control-group">
+            <strong>Debug Commands:</strong><br>
+            <button onclick="logDebugInfo()">📊 Log Debug Info</button>
+            <button onclick="findModel()">🔍 Find Model</button>
+            <button onclick="showBounds()">📦 Show Bounds</button>
+        </div>
+    </div>
+    
+    <script>
+        const viewer = document.getElementById('viewer');
+        const status = document.getElementById('status');
+        const progress = document.getElementById('progress');
+        const stats = document.getElementById('stats');
+        
+        // Progress tracking
+        viewer.addEventListener('progress', (e) => {
+            const percent = Math.round(e.detail.totalProgress * 100);
+            progress.textContent = percent + '%';
+            console.log('Loading:', percent + '%');
+        });
+        
+        // Model loaded
+        viewer.addEventListener('load', () => {
+            status.textContent = '✅ Model Loaded!';
+            console.log('Model loaded successfully');
+            
+            // Get model info
+            updateStats();
+            
+            // Try to auto-frame after a delay
+            setTimeout(() => {
+                autoFrame();
+                updateStats();
+            }, 500);
+        });
+        
+        // Error handling
+        viewer.addEventListener('error', (e) => {
+            status.textContent = '❌ Error loading model';
+            status.classList.add('error');
+            console.error('Model loading error:', e);
+        });
+        
+        function updateStats() {
+            try {
+                const bounds = viewer.getBoundingBoxCenter();
+                const scale = viewer.scale;
+                const camera = viewer.getCameraOrbit();
+                const target = viewer.getCameraTarget();
+                const fov = viewer.getFieldOfView();
+                
+                stats.innerHTML = `
+                    Center: ${bounds ? `${bounds.x.toFixed(2)}, ${bounds.y.toFixed(2)}, ${bounds.z.toFixed(2)}` : 'N/A'}<br>
+                    Scale: ${scale}<br>
+                    Camera Orbit: ${camera.theta.toFixed(0)}°, ${camera.phi.toFixed(0)}°, ${camera.radius.toFixed(2)}m<br>
+                    Target: ${target.x.toFixed(2)}, ${target.y.toFixed(2)}, ${target.z.toFixed(2)}<br>
+                    FOV: ${fov}°<br>
+                    Visible: ${viewer.modelIsVisible}
+                `;
+            } catch (e) {
+                stats.innerHTML = 'Error getting stats: ' + e.message;
+            }
+        }
+        
+        function autoFrame() {
+            console.log('Auto-framing model...');
+            viewer.updateFraming();
+            setTimeout(updateStats, 100);
+        }
+        
+        function resetCamera() {
+            viewer.resetTurntableRotation();
+            viewer.cameraOrbit = '0deg 75deg 105%';
+            viewer.fieldOfView = '30deg';
+            updateStats();
+        }
+        
+        function toggleRotate() {
+            viewer.autoRotate = !viewer.autoRotate;
+        }
+        
+        function centerModel() {
+            viewer.cameraTarget = '0m 0m 0m';
+            updateStats();
+        }
+        
+        function setView(orbit) {
+            viewer.cameraOrbit = orbit;
+            setTimeout(updateStats, 100);
+        }
+        
+        function zoom(factor) {
+            const current = viewer.getCameraOrbit();
+            viewer.cameraOrbit = `${current.theta}deg ${current.phi}deg ${factor}m`;
+            setTimeout(updateStats, 100);
+        }
+        
+        function setFOV(value) {
+            viewer.fieldOfView = value + 'deg';
+            document.getElementById('fovValue').textContent = value + 'deg';
+            updateStats();
+        }
+        
+        function setExposure(value) {
+            viewer.exposure = value;
+            document.getElementById('exposureValue').textContent = value;
+        }
+        
+        function logDebugInfo() {
+            console.group('🔍 Debug Info');
+            console.log('Model Visible:', viewer.modelIsVisible);
+            console.log('Camera Orbit:', viewer.getCameraOrbit());
+            console.log('Camera Target:', viewer.getCameraTarget());
+            console.log('Field of View:', viewer.getFieldOfView());
+            console.log('Bounding Box:', viewer.getBoundingBoxCenter());
+            console.log('Scale:', viewer.scale);
+            console.log('Model URL:', viewer.src);
+            console.log('Viewer Element:', viewer);
+            console.groupEnd();
+        }
+        
+        function findModel() {
+            console.log('🔍 Searching for model...');
+            
+            // Try different camera positions
+            const positions = [
+                '0deg 90deg 1m',
+                '0deg 90deg 10m',
+                '0deg 90deg 100m',
+                '0deg 90deg 0.1m',
+                '0deg 90deg 0.01m',
+                '45deg 45deg auto',
+                '0deg 0deg auto'
+            ];
+            
+            let index = 0;
+            const interval = setInterval(() => {
+                if (index >= positions.length) {
+                    clearInterval(interval);
+                    console.log('Finished searching. Check if model appeared.');
+                    autoFrame();
+                    return;
+                }
+                
+                viewer.cameraOrbit = positions[index];
+                console.log('Trying:', positions[index]);
+                updateStats();
+                index++;
+            }, 1000);
+        }
+        
+        function showBounds() {
+            viewer.updateFraming();
+            const bounds = viewer.getBoundingBoxCenter();
+            console.log('Model Bounds:', bounds);
+            alert(`Model Bounds:\nX: ${bounds?.x || 'N/A'}\nY: ${bounds?.y || 'N/A'}\nZ: ${bounds?.z || 'N/A'}`);
+        }
+        
+        // Update stats periodically
+        setInterval(updateStats, 2000);
+        
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            switch(e.key) {
+                case 'f': autoFrame(); break;
+                case 'r': resetCamera(); break;
+                case ' ': toggleRotate(); break;
+                case 'd': logDebugInfo(); break;
+                case 's': findModel(); break;
+            }
+        });
+        
+        console.log('🎮 Keyboard shortcuts:');
+        console.log('F - Auto frame');
+        console.log('R - Reset camera');
+        console.log('Space - Toggle rotation');
+        console.log('D - Debug info');
+        console.log('S - Search for model');
+    </script>
+</body>
+</html>

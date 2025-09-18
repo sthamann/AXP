@@ -1,23 +1,24 @@
 {
-  "id": "cap_sneaker_3d",
-  "name": "3D Sneaker Configurator",
-  "version": "0.1.0",
+  "id": "cap_nike_shoe_v2",
+  "name": "Nike Shoe V2 - 3D Experience",
+  "version": "1.0.0",
   "entry": {
     "html": "index.html"
   },
-  "surfaces": ["canvas3d", "html"],
+  "surfaces": ["canvas3d", "html", "webgl"],
   "sandbox_policy": {
     "dom": true,
-    "storage": "none",
+    "storage": "sessionStorage",
     "network": {
       "allow": [
-        "https://cdn.urban-footwear.com/assets/",
-        "https://cdn.urban-footwear.com/models/"
+        "https://ajax.googleapis.com/ajax/libs/model-viewer/",
+        "https://cdn.nike.com/",
+        "https://modelviewer.dev/"
       ],
-      "block_all_others": true
+      "block_all_others": false
     },
-    "lifetime_seconds": 600,
-    "permissions": []
+    "lifetime_seconds": 1800,
+    "permissions": ["camera_orbit", "auto_rotate"]
   },
   "api": {
     "inbound_events": [
@@ -28,6 +29,7 @@
     ],
     "outbound_events": [
       "ready",
+      "capsule_ready",
       "state_changed",
       "add_to_cart",
       "telemetry",
@@ -35,18 +37,21 @@
     ]
   },
   "resources": {
-    "max_memory_mb": 128,
-    "max_cpu_percent": 25
+    "max_memory_mb": 256,
+    "max_cpu_percent": 50,
+    "models": ["nike.glb"]
   },
   "metadata": {
-    "author": "Urban Footwear GmbH",
-    "description": "Interactive 3D configurator for Classic High Top Sneaker",
-    "tags": ["3d", "configurator", "sneaker", "footwear"],
-    "preview_image": "preview.png"
+    "author": "Nike Digital Innovation",
+    "description": "Premium 3D experience for Nike Shoe V2 with interactive colorways and sizes",
+    "tags": ["3d", "nike", "sneaker", "interactive", "premium", "glb"],
+    "preview_image": "preview.png",
+    "brand": "Nike",
+    "product_line": "Nike Shoe V2"
   },
   "signature": {
     "alg": "RS256",
-    "kid": "did:web:urban-footwear.com#capsule-key-2025",
-    "value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9...capsule_signature"
+    "kid": "did:web:nike.com#capsule-key-2025",
+    "value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9...nike_capsule_signature"
   }
 }
