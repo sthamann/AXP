@@ -1,6 +1,6 @@
 # 🛍️ AXP: Agentic Experience Protocol
 
-pa> **Part of the [Agentic Commerce Organization](https://agentic-commerce.org/) - Building open standards for the greatest disruption eCommerce has ever faced**
+> **Part of the [Agentic Commerce Organization](https://agentic-commerce.org/) - Building open standards for the greatest disruption eCommerce has ever faced**
 
 ## 🌊 The Paradigm Shift: Why AXP is Critical for the Future of Commerce
 
@@ -37,11 +37,92 @@ Traditional e-commerce formats (product feeds, APIs, HTML) were designed for hum
 
 ---
 
+## 🏗️ The Big Picture: Agentic Commerce Architecture
+
+```mermaid
+graph TB
+    subgraph "Merchant Ecosystem"
+        M1[Traditional eCommerce]
+        M2[Product Catalogs]
+        M3[Brand Identity]
+        M4[Customer Reviews]
+    end
+    
+    subgraph "AXP Protocol Layer"
+        AXP1["🎨 Experience Protocol<br/>(AXP)"]
+        AXP2[Rich Product Data]
+        AXP3[Trust Signals]
+        AXP4[3D/AR Experiences]
+        AXP5[Intent Mapping]
+    end
+    
+    subgraph "Payment Infrastructure"
+        AP2["💰 Agent Payments Protocol<br/>(Google AP2)"]
+        PAY1[Intent Mandates]
+        PAY2[Cart Mandates]
+        PAY3[Payment Authorization]
+        PAY4[Settlement]
+    end
+    
+    subgraph "AI Agent Layer"
+        AGENT1[Shopping Agents]
+        AGENT2[B2B Procurement Agents]
+        AGENT3[Comparison Agents]
+    end
+    
+    subgraph "End Users"
+        USER1[Consumers]
+        USER2[Businesses]
+    end
+    
+    M1 --> AXP1
+    M2 --> AXP2
+    M3 --> AXP3
+    M4 --> AXP3
+    
+    AXP1 --> AXP2
+    AXP1 --> AXP3
+    AXP1 --> AXP4
+    AXP1 --> AXP5
+    
+    AXP2 --> AGENT1
+    AXP3 --> AGENT1
+    AXP4 --> AGENT1
+    AXP5 --> AGENT1
+    
+    AGENT1 --> AP2
+    AGENT2 --> AP2
+    AGENT3 --> AP2
+    
+    AP2 --> PAY1
+    PAY1 --> PAY2
+    PAY2 --> PAY3
+    PAY3 --> PAY4
+    
+    AGENT1 --> USER1
+    AGENT2 --> USER2
+    
+    style AXP1 fill:#e1f5fe,stroke:#01579b,stroke-width:3px
+    style AP2 fill:#fff3e0,stroke:#e65100,stroke-width:3px
+    style AGENT1 fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+    style AGENT2 fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+    style AGENT3 fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+```
+
+### Protocol Synergy
+
+- **AXP (Agentic Experience Protocol)**: Handles the discovery and experience layer - rich product data, trust signals, and interactive experiences
+- **[AP2 (Agent Payments Protocol)](https://github.com/google-agentic-commerce/AP2)**: Google's protocol that handles the payment layer - secure autonomous transactions, intent validation, and settlement
+
+Together, AXP and AP2 form the complete infrastructure for agent-driven commerce, where AXP provides the "what" and "why" (product context and trust), while AP2 handles the "how" (secure payment execution).
+
+---
+
 ## 🎯 What is AXP?
 
 **An open protocol making commerce experiences machine-readable for AI agents.**
 
-AXP enables uniqueness, trust, differentiation, and interactive experiences beyond traditional e-commerce, designed for the agent economy with deep integration to payment protocols like AP2.
+AXP enables uniqueness, trust, differentiation, and interactive experiences beyond traditional e-commerce, designed for the agent economy with deep integration to payment protocols like [Google's AP2 (Agent Payments Protocol)](https://github.com/google-agentic-commerce/AP2).
 
 ## 💡 Core Value Propositions
 
@@ -305,7 +386,7 @@ Extended tool suite for complete product interaction:
 
 ## 🔄 AP2 Integration
 
-Seamless integration with Agent Payments Protocol:
+Seamless integration with [Google's Agent Payments Protocol (AP2)](https://github.com/google-agentic-commerce/AP2):
 
 ```json
 {
@@ -379,7 +460,7 @@ MIT License - See [LICENSE](LICENSE) for details.
 - [Protocol Specification](docs/SPECIFICATION.md)
 - [Integration Guide](docs/INTEGRATION.md)
 - [Security Model](docs/SECURITY.md)
-- [AP2 Protocol](https://github.com/Anthropic/ap2)
+- [AP2 Protocol (Google)](https://github.com/google-agentic-commerce/AP2)
 
 ---
 
