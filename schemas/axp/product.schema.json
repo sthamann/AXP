@@ -843,8 +843,47 @@
                   "items": { "type": "string" }
                 }
               }
+            },
+            "weights": {
+              "type": "object",
+              "description": "Optional weights for each factor (0-1)",
+              "additionalProperties": { 
+                "type": "number", 
+                "minimum": 0, 
+                "maximum": 1 
+              }
             }
-          }
+          },
+          "required": ["primary"]
+        },
+        "experience_proofs": {
+          "type": "object",
+          "description": "Proof of customer interactions with experience capsules",
+          "properties": {
+            "session_id": {
+              "type": "string",
+              "description": "Unique identifier for the experience session"
+            },
+            "event_log_hash": {
+              "type": "string",
+              "description": "SHA-256 hash of the interaction event log"
+            },
+            "duration_seconds": {
+              "type": "integer",
+              "description": "Total duration of the interaction in seconds",
+              "minimum": 0
+            },
+            "capsule_id": {
+              "type": "string",
+              "description": "ID of the experience capsule used"
+            },
+            "timestamp": {
+              "type": "string",
+              "format": "date-time",
+              "description": "When the interaction occurred"
+            }
+          },
+          "required": ["event_log_hash"]
         }
       }
     }

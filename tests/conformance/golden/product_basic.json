@@ -1,0 +1,32 @@
+{
+  "spec": "axp",
+  "version": "0.1.0",
+  "generated_at": "2025-09-18T10:00:00Z",
+  "product": {
+    "id": "test_sku_001",
+    "title": "Test Product for Conformance",
+    "price": {
+      "currency": "EUR",
+      "value": 99.99
+    },
+    "availability": {
+      "state": "in_stock",
+      "quantity": 100
+    },
+    "lang": "en",
+    "currency": "EUR",
+    "country_of_origin": "DE",
+    "tax_region": "EU",
+    "agent_ranking_hint": {
+      "primary": ["review_summary.avg_rating", "trust_signals.return_rate"],
+      "weights": {
+        "review_summary.avg_rating": 0.6,
+        "trust_signals.return_rate": 0.4
+      }
+    },
+    "provenance": {
+      "brand_id": "test_brand_001",
+      "last_verified": "2025-09-18T09:00:00Z"
+    }
+  }
+}

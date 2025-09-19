@@ -1,0 +1,25 @@
+{
+  "spec": "axp",
+  "version": "0.1.0",
+  "generated_at": "NOT_A_VALID_TIMESTAMP",
+  "product": {
+    "id": "invalid_sku",
+    "title": "Invalid Product - Missing Required Fields",
+    "price": {
+      "currency": "INVALID",
+      "value": -100
+    },
+    "availability": {
+      "state": "unknown_state"
+    },
+    "agent_ranking_hint": {
+      "weights": {
+        "invalid_score": 1.5
+      }
+    },
+    "signature": {
+      "alg": "INVALID_ALG",
+      "sig": "not-base64url-encoded!@#$%"
+    }
+  }
+}

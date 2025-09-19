@@ -7,6 +7,14 @@ AXP (Agentic Experience Protocol) and AP2 (Agent Payments Protocol) work togethe
 - **AXP**: Provides rich product context, trust signals, and interactive experiences
 - **AP2**: Handles payment authorization, cart mandates, and transaction completion
 
+### Normative Requirements
+
+The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in RFC 2119.
+
+**MUST**: Merchants MUST include AXP evidence in AP2 mandates for verifiable commerce
+**SHOULD**: Agents SHOULD validate AXP signatures before accepting AP2 transactions
+**MAY**: Systems MAY cache AXP evidence for dispute resolution
+
 ```mermaid
 graph LR
     subgraph "Discovery & Experience (AXP)"
@@ -128,16 +136,22 @@ class AgentShoppingOrchestrator {
 }
 ```
 
-### 2. Data Model Mapping
+### 2. Data Model Mapping (Normative)
 
-| AXP Field | AP2 Field | Usage |
-|-----------|-----------|-------|
-| `product.id` | `displayItem.sku` | Product identification |
-| `product.price` | `displayItem.amount` | Pricing |
-| `brand.trust_factors` | `merchant_evidence` | Dispute resolution |
-| `product.intent_signals` | `intent_validation` | Intent matching |
-| `product.return_rate` | `risk_signals` | Payment risk assessment |
-| `brand.certifications` | `merchant_credentials` | Trust establishment |
+| AXP Field | AP2 Field | Requirement |
+|-----------|-----------|-------------|
+| `product.id` | `displayItem.sku` | **MUST** |
+| `product.price` | `displayItem.amount` | **MUST** |
+| `brand_profile_signature` | `merchant_evidence.brand_signature` | **MUST** |
+| `axp_product_signature` | `merchant_evidence.product_signature` | **MUST** |
+| `trust_score` | `merchant_evidence.trust_score` | **SHOULD** |
+| `review_summary` | `merchant_evidence.review_summary` | **SHOULD** |
+| `intent_signals` | `intent_context` | **SHOULD** |
+| `return_rate` | `risk_data.return_rate` | **SHOULD** |
+| `experience_proofs` | `interaction_evidence` | **MAY** |
+| `brand.certifications` | `merchant_credentials` | **SHOULD** |
+| `product.soft_signals` | `displayItem.metadata` | **MAY** |
+| `product.policies` | `merchant.policies` | **SHOULD** |
 
 ## Integration Patterns
 
@@ -221,8 +235,8 @@ interface EvidencedCartMandate extends CartMandate {
   merchant_signature: string;
   timestamp: string;
   
-  // AXP evidence chain
-  axp_evidence?: {
+  // AXP evidence chain (MUST be included for high-value transactions)
+  axp_evidence: {
     brand_profile: {
       signature: string;
       trust_score: number;
@@ -356,7 +370,11 @@ class RiskAggregator {
 
 ## Dispute Resolution
 
-### Evidence Collection
+### Evidence Collection (Normative)
+
+**MUST**: Include cryptographic proofs from both AXP and AP2
+**SHOULD**: Preserve historical state at time of transaction
+**MAY**: Include experience session recordings
 
 When disputes arise, combine AXP and AP2 data:
 

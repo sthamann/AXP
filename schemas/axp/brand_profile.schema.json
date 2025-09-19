@@ -190,6 +190,12 @@
               "description": "Sources used for domain age verification (whois, certificate_transparency, dns_history, internet_archive)"
             }
           }
+        },
+        "brand_profile_strength": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Verifiable completeness and recency score (0-1) derived from number of verified claims, domain age, certifications, and metrics recency"
         }
       }
     },

@@ -2,15 +2,26 @@
 
 ## Table of Contents
 
+### Part 1: Normative Specification
 1. [Introduction](#introduction)
-2. [Namespace and Versioning](#namespace-and-versioning)
-3. [Data Model](#data-model)
-4. [Export Format](#export-format)
-5. [MCP Protocol](#mcp-protocol)
-6. [Experience Capsules](#experience-capsules)
-7. [Security Model](#security-model)
-8. [Controlled Vocabularies](#controlled-vocabularies)
-9. [Scoring Guidelines](#scoring-guidelines)
+2. [Conformance Requirements](#conformance-requirements)
+3. [Namespace and Versioning](#namespace-and-versioning)
+4. [Canonical JSON and Signatures](#canonical-json-and-signatures)
+5. [Data Model](#data-model)
+6. [Export Format](#export-format)
+7. [MCP Protocol](#mcp-protocol)
+8. [Experience Capsules](#experience-capsules)
+9. [Security Model](#security-model)
+
+### Part 2: Implementation Profiles
+10. [Controlled Vocabularies](#controlled-vocabularies)
+11. [Scoring Guidelines](#scoring-guidelines)
+12. [Internationalization](#internationalization)
+13. [Real-time Updates](#real-time-updates)
+
+### Part 3: Integration
+14. [AP2 Evidence Chain](#ap2-evidence-chain)
+15. [Compliance Suite](#compliance-suite)
 
 ## Introduction
 
@@ -24,15 +35,65 @@ The Agentic Experience Protocol (AXP) defines a standardized format for exposing
 4. **Privacy-Preserving**: No PII, strict sandboxing, minimal data exposure
 5. **Interoperable**: Works seamlessly with AP2 for payments
 
+## Conformance Requirements
+
+The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in RFC 2119.
+
+### Conformance Levels
+
+1. **Core Profile**: Minimum requirements for AXP compliance
+2. **Retail Profile**: Additional requirements for retail commerce
+3. **B2B Profile**: Extended requirements for B2B transactions
+
+### Core Requirements
+
+- **MUST**: Every AXP document MUST carry `spec`, `version`, and `generated_at` fields
+- **MUST**: Every signed AXP object MUST follow the AXP Canonical JSON rules
+- **SHOULD**: Providers SHOULD implement the Retail Core Profile
+- **MAY**: Providers MAY extend with industry-specific profiles
+
 ## Namespace and Versioning
 
 - **Namespace**: `axp.v0_1`
 - **Extension URI**: `https://agentic-commerce.org/axp/v0.1`
 - **Version Format**: Semantic Versioning (SemVer)
-- **Required Fields**: All top-level objects must include:
-  - `spec`: "axp"
-  - `version`: "0.1.0"
-  - `generated_at`: ISO 8601 timestamp
+- **Required Fields**: All top-level objects MUST include:
+  - `spec`: "axp" (MUST)
+  - `version`: "0.1.0" (MUST)
+  - `generated_at`: ISO 8601 timestamp with Z suffix (MUST)
+  - `last_verified`: ISO 8601 timestamp (SHOULD)
+
+## Canonical JSON and Signatures
+
+### Canonical JSON Rules
+
+**MUST**: Before signing, apply these transformations:
+1. Remove `signature` field if present
+2. Sort object keys lexicographically
+3. Format numbers as IEEE 754 double precision without leading zeros
+4. Format timestamps in ISO 8601 with Z suffix (UTC only)
+5. Normalize Unicode strings to NFC form
+6. No whitespace outside of string values
+
+### Signature Requirements
+
+**MUST**: Support Ed25519 and RS256 algorithms
+**MUST**: Keys distributed via `did:web` or JWKS endpoint
+**SHOULD**: Rotate keys quarterly, old keys retained for verification only
+**MAY**: Use on-chain anchoring as additional proof
+
+### Signature Format
+
+```json
+{
+  "data": { /* canonicalized content */ },
+  "signature": {
+    "alg": "EdDSA",
+    "kid": "did:web:demo.shop#axp-2025",
+    "sig": "base64url...",
+    "ts": "2025-09-18T10:00:00Z"
+  }
+}
 
 ## Data Model
 
@@ -504,20 +565,27 @@ Interactive micro-experiences with strict sandboxing.
 
 ### PostMessage Contract
 
+**MUST**: All inbound events carry `correlationId`, outbound events echo same id
+**MUST**: Errors result in `{ type: "error", code: string, message: string, correlationId: string }`
+**MUST**: Telemetry contains `event`, `ts`, `dur`, `surface`, `fps` (optional)
+**SHOULD**: Host terminates capsule after `lifetime_seconds`
+**MAY**: Support streaming mode for large model interactions
+
 ```typescript
 // Inbound events (Host → Capsule)
 type InboundEvent =
   | { type: "init"; correlationId: string }
-  | { type: "configure"; params: Record<string, unknown> }
-  | { type: "set_variant"; sku: string; params: Record<string, unknown> }
-  | { type: "request_quote" };
+  | { type: "configure"; correlationId: string; params: Record<string, unknown> }
+  | { type: "set_variant"; correlationId: string; sku: string; params: Record<string, unknown> }
+  | { type: "request_quote"; correlationId: string };
 
 // Outbound events (Capsule → Host)
 type OutboundEvent =
-  | { type: "ready" }
-  | { type: "state_changed"; state: Record<string, unknown> }
-  | { type: "add_to_cart"; sku: string; quantity: number }
-  | { type: "telemetry"; event: string; data: Record<string, unknown> };
+  | { type: "ready"; correlationId: string }
+  | { type: "state_changed"; correlationId: string; state: Record<string, unknown> }
+  | { type: "add_to_cart"; correlationId: string; sku: string; quantity: number }
+  | { type: "telemetry"; correlationId: string; event: string; ts: string; dur?: number; data: Record<string, unknown> }
+  | { type: "error"; correlationId: string; code: string; message: string };
 ```
 
 ## Security Model
@@ -544,18 +612,12 @@ Content-Security-Policy:
 
 ### Cryptographic Provenance
 
-All top-level objects support Ed25519 or RSA signatures:
+**MUST**: Apply replay protection via `X-AXP-Timestamp` header with max clock skew of 30 seconds for write operations
+**MUST**: Support Proof-of-Work challenge for suspicious agents (optional enforcement)
+**SHOULD**: Support mTLS for high-security scenarios
+**SHOULD**: Maintain audit log with signature per entry and integrity verification
 
-```json
-{
-  "data": { /* actual content */ },
-  "signature": {
-    "alg": "EdDSA",
-    "kid": "did:web:demo.shop#axp-2025",
-    "sig": "base64url..."
-  }
-}
-```
+All top-level objects MUST support Ed25519 or RSA signatures with canonical JSON serialization.
 
 ## Controlled Vocabularies
 
@@ -590,23 +652,63 @@ All top-level objects support Ed25519 or RSA signatures:
 
 ## Scoring Guidelines
 
-All scores follow these principles:
+### Normative Requirements
 
-1. **Range**: All scores in [0,1]
-2. **Evidence**: Always backed by evidence array
-3. **Transparency**: Clear computation methodology
-4. **Agent Hints**: Support for `agent_ranking_hint`
+**MUST**: All scores in range [0,1] with evidence list
+**MUST**: Time-weighting via exponential decay, standard half-life per signal class:
+  - Behavioral signals: 90 days
+  - Transaction signals: 180 days
+  - Review signals: 365 days
+**SHOULD**: Apply Dirichlet smoothing for sparse data
+**MAY**: Use industry-specific benchmarks
 
-### Example Ranking Hint
+### Agent Ranking Hints
 
 ```json
 {
   "agent_ranking_hint": {
     "primary": ["uniqueness_score", "review_summary.avg_rating"],
-    "secondary": ["return_rate", "sustainability_score"]
+    "secondary": ["return_rate", "sustainability_score"],
+    "weights": {
+      "uniqueness_score": 0.35,
+      "review_summary.avg_rating": 0.25,
+      "return_rate": 0.20,
+      "sustainability_score": 0.20
+    }
   }
 }
 ```
+
+## Internationalization
+
+### Required Fields
+
+**MUST**: Include for all products:
+- `lang`: ISO 639-1 language code
+- `currency`: ISO 4217 currency code
+- `country_of_origin`: ISO 3166-1 alpha-2
+- `tax_region`: Region identifier for tax calculation
+
+**SHOULD**: Provide measurement units:
+- `measurement_system`: "metric" or "imperial"
+- Industry-specific: shoe sizes (EU/US/UK), textile weight (g/m²)
+
+## Real-time Updates
+
+### Subscription Events
+
+**MUST**: Support these event types:
+```json
+{
+  "inventory_update": { "previous_hash": "...", "new_hash": "...", "ts": "..." },
+  "price_update": { "previous_hash": "...", "new_hash": "...", "ts": "..." },
+  "availability_update": { "previous_hash": "...", "new_hash": "...", "ts": "..." },
+  "trust_snapshot_update": { "previous_hash": "...", "new_hash": "...", "ts": "..." }
+}
+```
+
+**SHOULD**: Use pull model with `since` cursor plus events with TTL
+**MAY**: Implement `axp.subscribeInventory` for push notifications
 
 ## Rate Limits
 
@@ -634,12 +736,57 @@ Standard HTTP status codes with AXP error format:
 }
 ```
 
-## Compliance
+## AP2 Evidence Chain
 
-- **GDPR**: No PII in exports
-- **Accessibility**: WCAG 2.1 AA for capsules
-- **Localization**: Multi-language support via lang fields
+### Required Evidence in AP2 Mandates
+
+**MUST**: Merchants include in Cart Mandate:
+- `axp_product_signature`: Product signature hash
+- `axp_brand_profile_signature`: Brand profile signature hash
+
+**SHOULD**: Include in `merchant_evidence`:
+- `trust_score`: Normalized trust score [0,1]
+- `review_summary`: Aggregated review metrics
+
+**MAY**: Include in `experience_sessions`:
+- `interaction_log_hash`: SHA-256 of interaction events
+- `duration_seconds`: Total interaction time
+
+### Mapping Table
+
+| AXP Field | AP2 Field | Requirement |
+|-----------|-----------|-------------|
+| `product.id` | `displayItem.sku` | MUST |
+| `price` | `amount` | MUST |
+| `brand_profile_signature` | `merchant_evidence` | MUST |
+| `intent_signals` | `intent_context` | SHOULD |
+| `return_rate` | `risk_data` | SHOULD |
+| `experience_proofs` | `interaction_evidence` | MAY |
+
+## Compliance Suite
+
+### Validation Tools
+
+**MUST** provide:
+- `axp validate schemas`: JSON Schema validation via AJV and Pydantic
+- `axp sign`: Create canonical signature
+- `axp verify`: Verify signature and canonicalization
+
+**SHOULD** provide:
+- `axp conformance`: Test suite with:
+  - 10 golden test vectors
+  - 2 edge cases
+  - 1 invalid case
+- Demo bundles and replay scripts
+
+### Test Vectors
+
+Reference implementation MUST pass all test vectors in `/tests/conformance/`:
+- `golden/*.json`: Valid AXP documents with signatures
+- `edge/*.json`: Edge cases (empty arrays, Unicode, large numbers)
+- `invalid/*.json`: Documents that MUST fail validation
 
 ---
 
 *This specification is a living document. Version 0.1.0 - Last updated: 2025-09-18*
+*Developed as part of the [Agentic Commerce Organization](https://agentic-commerce.org/)*

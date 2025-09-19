@@ -15,7 +15,10 @@
     "lint": "eslint . --ext .ts",
     "format": "prettier --write \"src/**/*.ts\" \"examples/**/*.ts\"",
     "validate:schemas": "ajv compile -s schemas/axp/*.schema.json",
-    "bundle:example": "node scripts/create-bundle.js"
+    "bundle:example": "node scripts/create-bundle.js",
+    "test:schemas": "node scripts/validate.js",
+    "test:signatures": "node scripts/validate.js --signatures",
+    "test:conformance": "node scripts/validate.js"
   },
   "keywords": [
     "agentic",
@@ -31,6 +34,7 @@
   "dependencies": {
     "@modelcontextprotocol/sdk": "^0.6.2",
     "ajv": "^8.17.1",
+    "ajv-formats": "^2.1.1",
     "fastify": "^4.26.2",
     "fastify-cors": "^6.1.0",
     "fastify-swagger": "^5.2.0",

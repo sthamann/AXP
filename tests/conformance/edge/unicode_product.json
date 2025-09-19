@@ -1,0 +1,33 @@
+{
+  "spec": "axp",
+  "version": "0.1.0",
+  "generated_at": "2025-09-18T10:00:00Z",
+  "product": {
+    "id": "emoji_sku_🎁",
+    "title": "測試產品 🌟 مُنتَج تجريبي",
+    "short_desc": "Product with emoji 😊, CJK characters 中文日本語한국어, and RTL text العربية",
+    "price": {
+      "currency": "JPY",
+      "value": 0.00000001
+    },
+    "availability": {
+      "state": "in_stock",
+      "quantity": 9999999999
+    },
+    "lang": "zh",
+    "currency": "JPY",
+    "country_of_origin": "JP",
+    "tax_region": "JP",
+    "feature_bullets": [],
+    "soft_signals": {
+      "uniqueness_score": 0,
+      "craftsmanship_score": 1,
+      "sustainability_score": 0.9999999999
+    },
+    "intent_signals": [],
+    "provenance": {
+      "brand_id": "unicode_brand_测试",
+      "last_verified": "2025-09-18T23:59:59Z"
+    }
+  }
+}
