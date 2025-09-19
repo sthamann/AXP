@@ -236,7 +236,8 @@ interface EvidencedCartMandate extends CartMandate {
   timestamp: string;
   
   // AXP evidence chain (MUST be included for high-value transactions)
-  axp_evidence: {
+  axp_public_evidence: {
+    // Public verifiable data (max 32KB)
     brand_profile: {
       signature: string;
       trust_score: number;

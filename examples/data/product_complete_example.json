@@ -1,0 +1,280 @@
+{
+  "spec": "axp",
+  "version": "0.1.0",
+  "generated_at": "2025-09-18T10:00:00Z",
+  "last_verified": "2025-09-18T09:00:00Z",
+  "ttl_seconds": 86400,
+  "product": {
+    "id": "sku_123",
+    "title": "Classic High Top Sneaker Red",
+    "short_desc": "Retro look with modern comfort, durable vulcanized sole",
+    
+    "identifiers": {
+      "gtin": "4001234567890",
+      "mpn": "UF-CHTS-2025",
+      "asin": "B09XYZ123AB"
+    },
+    
+    "taxonomy": {
+      "google_product_category": "3334",
+      "hs_code": "640411",
+      "unspsc": "53111601",
+      "product_type": "Footwear > Sneakers > High Tops"
+    },
+    
+    "pricing": {
+      "list_price": {
+        "currency": "EUR",
+        "value": 149.90
+      },
+      "sale_price": {
+        "currency": "EUR",
+        "value": 129.90
+      },
+      "tax_included": true,
+      "tax_rate": 0.19,
+      "valid_from": "2025-09-01T00:00:00Z",
+      "valid_to": "2025-09-30T23:59:59Z",
+      "unit_price": {
+        "value": 3.09,
+        "unit": "EUR_per_100g"
+      },
+      "regional": [
+        {
+          "region": "CH",
+          "currency": "CHF",
+          "value": 139.00,
+          "tax_included": false
+        },
+        {
+          "region": "UK",
+          "currency": "GBP",
+          "value": 109.99,
+          "tax_included": true
+        }
+      ],
+      "minimum_advertised_price": 119.90
+    },
+    
+    "shipping": {
+      "net_weight_grams": 420,
+      "ship_weight_grams": 550,
+      "package_dimensions_cm": {
+        "length": 32,
+        "width": 18,
+        "height": 12
+      },
+      "lead_time_days": {
+        "p50": 2,
+        "p95": 4
+      },
+      "shipping_class": "standard",
+      "ships_from": ["DE", "NL"]
+    },
+    
+    "regulatory": {
+      "hazmat": false,
+      "battery": {
+        "present": false
+      },
+      "age_rating": "all_ages",
+      "eco_labels": [
+        "Leather_Working_Group_Gold"
+      ],
+      "ce_marking": true,
+      "fda_approved": false
+    },
+    
+    "warranty": {
+      "days": 365,
+      "type": "manufacturer",
+      "description": "Full warranty against manufacturing defects",
+      "service_level": "replace"
+    },
+    
+    "b2b": {
+      "moq": 10,
+      "price_tiers": [
+        {
+          "min_qty": 10,
+          "price": 119.90
+        },
+        {
+          "min_qty": 50,
+          "price": 109.90,
+          "discount_percent": 8.3
+        },
+        {
+          "min_qty": 100,
+          "price": 99.90,
+          "discount_percent": 16.7
+        }
+      ],
+      "lead_time_bulk": {
+        "days": 14,
+        "for_quantity": 500
+      },
+      "payment_terms": "2/10 Net 30",
+      "incoterms": "DDP"
+    },
+    
+    "compatibility": {
+      "works_with": ["cap_sneaker_3d", "cap_try_on_ar"],
+      "requires": [],
+      "replaces": ["sku_classic_v1"],
+      "spare_parts": ["sku_lace_red", "sku_lace_black", "sku_insole_comfort"],
+      "bundles": [
+        {
+          "bundle_id": "bundle_sneaker_care",
+          "products": ["sku_123", "acc_003_shoe_cleaner", "acc_002_laces_waxed"],
+          "discount": 10
+        }
+      ]
+    },
+    
+    "variant_axes": [
+      {"name": "color", "values": ["red", "black", "white", "navy"]},
+      {"name": "size", "unit": "EU", "values": ["39", "40", "41", "42", "43", "44", "45"]}
+    ],
+    
+    "availability": {
+      "state": "in_stock",
+      "quantity": 220
+    },
+    
+    "trust_signals": {
+      "review_summary": {
+        "avg_rating": 4.5,
+        "count_total": 1342,
+        "count_verified": 1180,
+        "distribution": {
+          "5": 720,
+          "4": 380,
+          "3": 140,
+          "2": 72,
+          "1": 30
+        },
+        "top_positive": ["Comfort", "Looks", "Quality"],
+        "top_negative": ["Runs small", "Break-in period"]
+      },
+      "return_reasons": [
+        {"reason": "size_issue", "share": 0.56},
+        {"reason": "color_mismatch", "share": 0.18},
+        {"reason": "quality_expectation", "share": 0.12}
+      ],
+      "return_rate": 0.14,
+      "warranty_days": 365
+    },
+    
+    "soft_signals": {
+      "uniqueness_score": 0.82,
+      "craftsmanship_score": 0.76,
+      "sustainability_score": 0.61,
+      "innovation_score": 0.55,
+      "fit_hint_score": 0.68,
+      "reliability_score": 0.88,
+      "performance_score": 0.72,
+      "owner_satisfaction_score": 0.81
+    },
+    
+    "intent_signals": [
+      {
+        "intent": "daily_commute",
+        "share": 0.34,
+        "confidence": 0.92,
+        "method": "events_plus_text",
+        "window_days": 90,
+        "sample_size": 1234,
+        "confidence_method": "wilson_score"
+      },
+      {
+        "intent": "basketball",
+        "share": 0.28,
+        "confidence": 0.88,
+        "method": "purchase_patterns",
+        "window_days": 180,
+        "sample_size": 892
+      },
+      {
+        "intent": "fashion",
+        "share": 0.38,
+        "confidence": 0.90,
+        "method": "text",
+        "window_days": 90,
+        "sample_size": 1456
+      }
+    ],
+    
+    "agent_ranking_hint": {
+      "primary": ["performance_score", "review_summary.avg_rating"],
+      "secondary": ["return_rate", "fit_hint_score"],
+      "weights": {
+        "performance_score": 0.35,
+        "review_summary.avg_rating": 0.30,
+        "return_rate": 0.20,
+        "fit_hint_score": 0.15
+      },
+      "context": {
+        "running": ["performance_score", "reliability_score"],
+        "fashion": ["uniqueness_score", "craftsmanship_score"],
+        "eco": ["sustainability_score"],
+        "value_shopping": ["return_rate", "warranty.days"]
+      }
+    },
+    
+    "experience_proofs": {
+      "session_id": "sess_20250918_abc123",
+      "event_log_hash": "sha256:7d865e959b2466918c9863afca942d0fb89d7c9ac0c99bafc3749504ded97730",
+      "duration_seconds": 342,
+      "capsule_id": "cap_sneaker_3d",
+      "timestamp": "2025-09-18T09:45:00Z"
+    },
+    
+    "localization": {
+      "lang": "en",
+      "market": "DE",
+      "cultural_adaptation": {
+        "size_system": "EU",
+        "color_names": {
+          "red": "Fire Red",
+          "black": "Midnight Black"
+        }
+      }
+    },
+    
+    "media": {
+      "images": [
+        {
+          "url": "https://cdn.urban-footwear.com/img/sneaker_red_1.jpg",
+          "machine_captions": [
+            {
+              "lang": "en",
+              "text": "Red high top sneaker on wooden floor, side view showing leather texture"
+            }
+          ]
+        }
+      ]
+    },
+    
+    "experiences": {
+      "capsules": [
+        {
+          "id": "cap_sneaker_3d",
+          "title": "3D configurator",
+          "capsule_uri": "axp://capsules/cap_sneaker_3d.zip",
+          "modality": "canvas3d",
+          "preferred_size": {
+            "width": 720,
+            "height": 480
+          }
+        }
+      ]
+    },
+    
+    "provenance": {
+      "brand_id": "brand_001",
+      "last_verified": "2025-09-18T08:30:00Z",
+      "signature": "EdDSA:base64url..."
+    }
+  }
+}

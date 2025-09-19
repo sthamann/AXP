@@ -129,11 +129,14 @@ AXP enables uniqueness, trust, differentiation, and interactive experiences beyo
 AI agents need structured, verifiable data to make confident purchasing decisions. AXP provides:
 
 - **🎨 Rich Experiences**: Interactive 3D configurators, AR try-ons, and immersive previews
-- **🔍 Deep Intent Understanding**: Precise signals from behavior, text, and context
-- **✅ Verifiable Trust**: Cryptographic proofs, anomaly detection, and multi-source validation
-- **📊 Intelligent Scoring**: Sophisticated KPIs calculated from measurable sub-factors
-- **🔒 Secure Interactions**: Sandboxed capsules with strict CSP and rate limiting
-- **💰 Payment Ready**: Seamless AP2 integration for autonomous transactions
+- **🔍 Deep Intent Understanding**: Precise signals with confidence intervals and statistical validation
+- **✅ Verifiable Trust**: Cryptographic proofs, third-party enrichment (Trustpilot, Trusted Shops, BuiltWith)
+- **📊 Intelligent Scoring**: Normative KPI formulas with Wilson score confidence
+- **🔒 Secure Interactions**: Public/sealed evidence separation, sandboxed capsules
+- **💰 Payment Ready**: Deep AP2 integration with evidence chain
+- **🏢 B2B Ready**: MOQ, price tiers, Incoterms, payment terms
+- **🌍 Global Commerce**: Multi-currency, tax regions, compliance tracking
+- **📋 Standard Identifiers**: GTIN, MPN, Google Product Category, HS codes
 
 ## 🏗️ Project Structure
 
@@ -152,10 +155,16 @@ AXP/
 │   ├── types/
 │   │   ├── index.ts            # TypeScript type definitions
 │   │   └── models.py           # Pydantic models with validation
-│   └── pipeline/               # Data extraction and processing
-│       ├── intent_extractor.py # Intent signal extraction
-│       ├── kpi_calculator.py   # Soft KPI calculations
-│       └── trust_verifier.py   # Trust signal verification
+│   ├── pipeline/               # Data extraction and processing
+│   │   ├── intent_extractor.py # Intent signal extraction
+│   │   ├── kpi_calculator.py   # Soft KPI calculations
+│   │   └── trust_verifier.py   # Trust signal verification
+│   ├── enrichment/
+│   │   └── providers.py        # Third-party data providers (Trustpilot, etc.)
+│   └── server/
+│       ├── index.ts            # MCP server implementation
+│       ├── extended-tools.ts   # Extended MCP tools for variants
+│       └── extended-mcp-tools.ts # Full MCP tool suite
 │
 ├── examples/
 │   ├── data/
@@ -174,6 +183,9 @@ AXP/
 │   │   └── PRODUCT.md         # Product schema documentation
 │   ├── SECURE_HANDSHAKE.md    # Agent-shop authentication
 │   ├── AP2_INTEGRATION.md     # Payment protocol integration
+│   ├── AP2_EVIDENCE_CHAIN.md  # Public/sealed evidence specification
+│   ├── KPI_FORMULAS.md        # Normative KPI calculations
+│   ├── PROFILES.md            # Conformance profiles (Core, Retail, B2B, etc.)
 │   ├── DISPUTE_EVIDENCE.md    # Dispute resolution framework
 │   └── VERIFIABLE_CREDENTIALS.md # VC implementation guide
 │
@@ -192,17 +204,28 @@ AXP/
   "product": {
     "id": "sku_123",
     "title": "Premium Running Shoe",
+    "identifiers": {
+      "gtin": "4006381333931",
+      "mpn": "RUN-2025-X"
+    },
+    "taxonomy": {
+      "google_product_category": "3334",
+      "hs_code": "640411"
+    },
+    "pricing": {
+      "list_price": {"currency": "EUR", "value": 149.90},
+      "sale_price": {"currency": "EUR", "value": 129.90},
+      "tax_included": true,
+      "unit_price": {"value": 4.33, "unit": "EUR_per_100g"}
+    },
+    "shipping": {
+      "net_weight_grams": 300,
+      "ship_weight_grams": 450,
+      "lead_time_days": {"p50": 2, "p95": 4}
+    },
     "variant_axes": [
       {"name": "color", "values": ["red", "black", "white"]},
       {"name": "size", "unit": "EU", "values": ["40", "41", "42"]}
-    ],
-    "variants": [
-      {
-        "sku": "sku_123_red_42",
-        "options": {"color": "red", "size": "42"},
-        "price": {"currency": "EUR", "value": 129.90},
-        "availability": {"state": "in_stock", "quantity": 45}
-      }
     ],
     "soft_signals": {
       "fit_hint_score": 0.68,
@@ -215,15 +238,62 @@ AXP/
         "intent": "running",
         "share": 0.42,
         "confidence": 0.85,
-        "method": "mixed_weights",
+        "method": "events_plus_text",
+        "window_days": 90,
+        "sample_size": 1234,
         "evidence": ["text:0.45", "behavior:0.38"]
       }
-    ]
+    ],
+    "b2b": {
+      "moq": 10,
+      "price_tiers": [
+        {"min_qty": 10, "price": 119.90},
+        {"min_qty": 50, "price": 109.90}
+      ]
+    }
   }
 }
 ```
 
-### 2. Experience Capsules
+### 2. Brand Profiles with Legal & Compliance
+
+```json
+{
+  "brand": {
+    "id": "brand_001",
+    "legal_name": "Demo Commerce GmbH",
+    "domains": ["demo.shop"],
+    "legal": {
+      "registration_number": "HRB 12345",
+      "vat_id": "DE123456789",
+      "duns": "123456789"
+    },
+    "payments": {
+      "methods": ["paypal", "credit_card", "klarna"],
+      "chargeback_rate": 0.004,
+      "dispute_rate": 0.009
+    },
+    "fulfillment": {
+      "carriers": ["DHL", "DPD", "UPS"],
+      "on_time_delivery_rate": 0.97,
+      "ships_to": ["DE", "AT", "NL"]
+    },
+    "compliance": {
+      "weee_categories": ["small_it"],
+      "rohs": true,
+      "reach": true
+    },
+    "tech_stack": {
+      "platform": "Shopware",
+      "platform_version": "6.5",
+      "detected": [{"name": "Cloudflare", "category": "cdn"}],
+      "source": "builtwith"
+    }
+  }
+}
+```
+
+### 3. Experience Capsules
 
 Sandboxed, interactive micro-experiences that run securely in agent environments.
 
@@ -246,67 +316,53 @@ Sandboxed, interactive micro-experiences that run securely in agent environments
 - 🛡️ Sandboxed iframe with PostMessage API communication
 - 📱 Responsive design for cross-device compatibility
 
-### 3. Intent & Trust Signals
-
-#### Intent Extraction Pipeline
+### 4. Third-Party Enrichment
 
 ```python
-# Multi-source intent extraction
-extractor = IntentExtractor()
-signals = extractor.compute_intent_signals(
-    product_id='sku_123',
-    data_sources={
-        'orders': [...],       # Gift wrap, bundles
-        'returns': [...],      # Size issues
-        'events': [...],       # 3D viewer usage
-        'texts': [...],        # Reviews, Q&A
-        'acquisitions': [...]  # Campaign data
-    }
-)
+# Unified third-party data enrichment
+from src.enrichment.providers import EnrichmentOrchestrator, TrustpilotProvider
+
+orchestrator = EnrichmentOrchestrator()
+orchestrator.register_provider(TrustpilotProvider(api_key))
+orchestrator.register_provider(TrustedShopsProvider(api_key))
+orchestrator.register_provider(BuiltWithProvider(api_key))
+
+# Enrich brand with all providers
+brand_evidence = await orchestrator.enrich_brand("demo.shop")
+# Returns verified data with anomaly detection
 ```
 
-#### Trust Verification
+### 5. Intent & Trust Signals with Statistical Confidence
 
 ```python
-# Verify external review source
-verifier = TrustVerifier()
-result = verifier.verify_review_source(
-    source='trustpilot',
-    business_id='example-store',
-    expected_stats={'avg_rating': 4.5, 'total_reviews': 1200}
+# Intent with Wilson score confidence
+signals = extractor.compute_intent_signals(
+    product_id='sku_123',
+    window_days=90,
+    min_sample_size=100,
+    confidence_method='wilson_score'
 )
-# Returns: confidence score, anomalies, verification method
+# Returns: intent, share, confidence interval, sample size
 ```
 
 ## 🧮 KPI Calculation System
 
-### Precise Soft Signal Computation
+### Normative Formulas (see [KPI_FORMULAS.md](docs/KPI_FORMULAS.md))
 
-All scores normalized 0-1, category-relative, with evidence tracking:
+All KPIs follow standardized calculations with confidence intervals:
 
-#### Fit Hint Score
-- Return rate due to size (inverse correlation)
-- Size advisor usage before purchase
-- Positive fit mentions in verified reviews
-- Exchange to different size rate
+```
+Return Rate = returns_in_90_days / units_shipped_in_90_days
+Dispute Rate = disputes_in_180_days / orders_in_180_days  
+On-Time Rate = on_time_in_30_days / total_deliveries_in_30_days
+Fit Hint Score = 1 - (size_returns / total_sales)
+```
 
-#### Reliability Score  
-- RMA per 1000 units sold
-- Mean time between failures (MTBF)
-- Warranty claim rate
-- Durability aspect in reviews
-
-#### Performance Score
-Domain-specific benchmarks:
-- **Footwear**: Energy return %, weight, cushioning
-- **Electronics**: Benchmark percentile, efficiency, latency
-- **Apparel**: Color fastness, fabric weight, abrasion
-
-#### Owner Satisfaction
-- Weighted verified reviews (1.5x weight)
-- Product-specific CSAT
-- Recent sentiment trend (90d vs previous)
-- Repeat purchase rate
+### Statistical Methods
+- **Wilson Score**: Conservative confidence intervals
+- **Time Decay**: λ = 0.0077 for 90-day half-life
+- **Dirichlet Smoothing**: For sparse data (α = 10-50)
+- **Anomaly Detection**: 2.5σ for ratings, 3.0σ for volume
 
 ## 🔐 Security Model
 
@@ -365,42 +421,52 @@ python src/pipeline/kpi_calculator.py
 python src/pipeline/trust_verifier.py
 ```
 
-## 🔧 MCP Tools
-
-Extended tool suite for complete product interaction:
+## 🔧 MCP Tools Suite
 
 ### Core Tools
-- `axp.getBrandProfile` - Brand data with trust metrics
-- `axp.searchCatalog` - Product search with soft signal filtering
-- `axp.getProduct` - Complete product details
+- `axp.getBrandProfile` - Brand with legal, payments, compliance
+- `axp.searchCatalog` - Advanced filtering (intent, trust, compliance)
+- `axp.getProduct` - Granular field selection
 
-### Variant Management
-- `axp.listExperiences` - Available capsules for product
-- `axp.getVariantMatrix` - Axes and SKU mapping
-- `axp.resolveVariant` - Options to specific SKU
+### Enrichment & Verification
+- `axp.getEnrichmentStatus` - Check third-party data freshness
+- `axp.calculateIntent` - Compute intent with confidence
+- `axp.getKPIs` - Retrieve KPIs with formulas
+- `axp.validateCompliance` - Check regulatory requirements
 
-### Trust & Signals
-- `axp.getSignals` - All soft/trust signals with evidence
-- `axp.getProductRelations` - Accessories, alternatives
-- `axp.requestExperienceSession` - Sandboxed capsule session
+### B2B & Commerce
+- `axp.getB2BTerms` - MOQ, tiers, Incoterms
+- `axp.getVariantMatrix` - Complete variant mapping
+- `axp.compareProducts` - Side-by-side comparison
+- `axp.getRelatedProducts` - Accessories, bundles, spares
 
-## 🔄 AP2 Integration
+## 🔄 AP2 Integration with Evidence Chain
 
 Seamless integration with [Google's Agent Payments Protocol (AP2)](https://github.com/google-agentic-commerce/AP2):
 
+### Public Evidence (Max 32KB)
 ```json
 {
-  "intent_mandate": {
-    "intent": "buy running shoes",
-    "context": {
-      "axp_signals": {
-        "performance_score": 0.93,
-        "fit_hint_score": 0.73
-      }
+  "axp_public_evidence": {
+    "brand_profile": {
+      "signature": "EdDSA:base64url...",
+      "trust_score": 0.87,
+      "certifications": ["ISO9001", "Trusted_Shops"]
+    },
+    "product": {
+      "signature": "EdDSA:base64url...",
+      "review_summary": {"avg_rating": 4.5, "count": 1342},
+      "return_rate": 0.14
+    },
+    "third_party": {
+      "trustpilot": {"rating": 4.6, "reviews": 12873}
     }
   }
 }
 ```
+
+### Sealed Evidence (Max 1MB, encrypted)
+For high-value transactions: experience sessions, behavioral signals
 
 ## 📊 SQL Query Examples
 
@@ -435,17 +501,39 @@ GROUP BY product_id;
 4. **Performant**: Optimized for real-time agent queries
 5. **Interoperable**: Works with existing e-commerce platforms
 
+## 📋 Conformance Profiles
+
+- **Core**: Minimum requirements (identifiers, pricing, availability)
+- **Retail**: B2C features (reviews, shipping, warranty)
+- **B2B**: Business features (MOQ, tiers, Incoterms)
+- **Regulated**: Compliance (CE, RoHS, REACH, age ratings)
+- **Digital**: Software/subscriptions (licensing, DRM)
+- **Marketplace**: Multi-vendor platforms
+
+See [PROFILES.md](docs/PROFILES.md) for detailed requirements.
+
 ## 📈 Roadmap
 
+### Completed ✅
 - [x] Core protocol v0.1
-- [x] Intent extraction pipeline
-- [x] KPI calculation system
-- [x] Trust verification framework
-- [x] Variant management
-- [ ] AR/VR capsules
+- [x] Normative KPI formulas
+- [x] Third-party enrichment (Trustpilot, Trusted Shops, BuiltWith)
+- [x] Public/sealed evidence separation
+- [x] Extended MCP tool suite
+- [x] Conformance profiles
+- [x] B2B features (MOQ, Incoterms)
+- [x] Standard identifiers (GTIN, MPN, Google categories)
+
+### In Progress 🚧
+- [ ] Reference validator CLI
+- [ ] Shopware export module
 - [ ] Real-time inventory sync
+
+### Planned 📅
+- [ ] AR/VR capsule standards
 - [ ] Federated trust network
 - [ ] Multi-agent collaboration
+- [ ] Blockchain anchoring
 
 ## 🤝 Contributing
 

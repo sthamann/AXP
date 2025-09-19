@@ -196,6 +196,249 @@
           "minimum": 0,
           "maximum": 1,
           "description": "Verifiable completeness and recency score (0-1) derived from number of verified claims, domain age, certifications, and metrics recency"
+        },
+        "legal": {
+          "type": "object",
+          "description": "Legal and registration information",
+          "properties": {
+            "registration_number": {
+              "type": "string",
+              "description": "Commercial register number"
+            },
+            "vat_id": {
+              "type": "string",
+              "description": "VAT identification number"
+            },
+            "eori": {
+              "type": "string",
+              "description": "Economic Operators Registration and Identification number"
+            },
+            "duns": {
+              "type": "string",
+              "description": "D&B D-U-N-S Number"
+            },
+            "gln": {
+              "type": "string",
+              "description": "Global Location Number"
+            },
+            "legal_form": {
+              "type": "string",
+              "description": "Legal form (GmbH, AG, Inc., Ltd., etc.)"
+            },
+            "beneficial_owners": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "name": { "type": "string" },
+                  "ownership_percent": { "type": "number", "minimum": 0, "maximum": 100 }
+                },
+                "required": ["name", "ownership_percent"]
+              }
+            }
+          }
+        },
+        "payments": {
+          "type": "object",
+          "description": "Payment capabilities and metrics",
+          "properties": {
+            "methods": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": ["paypal", "credit_card", "debit_card", "invoice", "sepa", "klarna", "afterpay", "crypto", "wire_transfer"]
+              }
+            },
+            "chargeback_rate": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "description": "Chargeback rate over last 180 days"
+            },
+            "dispute_rate": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "description": "Payment dispute rate over last 180 days"
+            },
+            "payment_terms": {
+              "type": "object",
+              "properties": {
+                "b2b_net_days": { "type": "integer", "minimum": 0 },
+                "early_payment_discount": { "type": "number", "minimum": 0 }
+              }
+            }
+          }
+        },
+        "fulfillment": {
+          "type": "object",
+          "description": "Shipping and fulfillment capabilities",
+          "properties": {
+            "carriers": {
+              "type": "array",
+              "items": { "type": "string" },
+              "description": "List of shipping carriers used"
+            },
+            "handling_time_days_p50": {
+              "type": "number",
+              "minimum": 0,
+              "description": "Median handling time in days"
+            },
+            "handling_time_days_p95": {
+              "type": "number",
+              "minimum": 0,
+              "description": "95th percentile handling time in days"
+            },
+            "on_time_delivery_rate": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "description": "Percentage of orders delivered on time (last 30 days)"
+            },
+            "ships_to": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "^[A-Z]{2}$"
+              },
+              "description": "ISO 3166-1 alpha-2 country codes"
+            },
+            "warehouse_locations": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "country": { "type": "string", "pattern": "^[A-Z]{2}$" },
+                  "city": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "compliance": {
+          "type": "object",
+          "description": "Regulatory compliance information",
+          "properties": {
+            "weee_categories": {
+              "type": "array",
+              "items": { "type": "string" },
+              "description": "WEEE product categories handled"
+            },
+            "epr_packaging": {
+              "type": "boolean",
+              "description": "Extended Producer Responsibility for packaging registered"
+            },
+            "rohs": {
+              "type": "boolean",
+              "description": "RoHS (Restriction of Hazardous Substances) compliant"
+            },
+            "reach": {
+              "type": "boolean",
+              "description": "REACH regulation compliant"
+            },
+            "liability_insurance": {
+              "type": "object",
+              "properties": {
+                "coverage_eur": { "type": "number", "minimum": 0 },
+                "insurer": { "type": "string" },
+                "valid_until": { "type": "string", "format": "date" }
+              }
+            },
+            "certifications": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "type": { "type": "string" },
+                  "issuer": { "type": "string" },
+                  "valid_until": { "type": "string", "format": "date" },
+                  "certificate_url": { "type": "string", "format": "uri" }
+                }
+              }
+            }
+          }
+        },
+        "policies": {
+          "type": "object",
+          "description": "Business policies",
+          "properties": {
+            "returns": {
+              "type": "object",
+              "properties": {
+                "days": { "type": "integer", "minimum": 0 },
+                "restocking_fee": { "type": "number", "minimum": 0, "maximum": 1 },
+                "return_shipping_paid_by": { "type": "string", "enum": ["buyer", "seller", "conditional"] }
+              }
+            },
+            "repairs": {
+              "type": "object",
+              "properties": {
+                "offered": { "type": "boolean" },
+                "warranty_repairs": { "type": "boolean" },
+                "policy_url": { "type": "string", "format": "uri" }
+              }
+            },
+            "sustainability": {
+              "type": "object",
+              "properties": {
+                "carbon_neutral_shipping": { "type": "boolean" },
+                "recycled_packaging": { "type": "boolean" },
+                "take_back_program": { "type": "boolean" },
+                "sustainability_report_url": { "type": "string", "format": "uri" }
+              }
+            }
+          }
+        },
+        "keys": {
+          "type": "object",
+          "description": "Well-known endpoints for verification",
+          "properties": {
+            "jwks_url": {
+              "type": "string",
+              "format": "uri",
+              "description": "JSON Web Key Set URL for key rotation"
+            },
+            "brand_profile_url": {
+              "type": "string",
+              "format": "uri",
+              "description": "Well-known URL for brand profile"
+            },
+            "did": {
+              "type": "string",
+              "description": "Decentralized Identifier"
+            }
+          }
+        },
+        "tech_stack": {
+          "type": "object",
+          "description": "Technology stack information",
+          "properties": {
+            "platform": { "type": "string" },
+            "platform_version": { "type": "string" },
+            "detected": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "name": { "type": "string" },
+                  "category": { "type": "string" },
+                  "version": { "type": "string" }
+                }
+              }
+            },
+            "detected_at": { "type": "string", "format": "date-time" },
+            "source": { "type": "string", "enum": ["builtwith", "wappalyzer", "self_declared"] }
+          }
+        },
+        "last_verified": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Last verification timestamp"
+        },
+        "ttl_seconds": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Time to live for cached data"
         }
       }
     },

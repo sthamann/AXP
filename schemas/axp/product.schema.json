@@ -739,12 +739,28 @@
               },
               "method": {
                 "type": "string",
-                "description": "How the intent was derived"
+                "description": "How the intent was derived",
+                "enum": ["events", "text", "events_plus_text", "purchase_patterns", "return_analysis", "support_tickets"]
               },
               "evidence": {
                 "type": "array",
                 "items": { "type": "string" },
                 "description": "Supporting evidence for this intent"
+              },
+              "window_days": {
+                "type": "integer",
+                "minimum": 1,
+                "description": "Measurement window in days"
+              },
+              "sample_size": {
+                "type": "integer",
+                "minimum": 0,
+                "description": "Number of data points in the measurement"
+              },
+              "confidence_method": {
+                "type": "string",
+                "enum": ["wilson_score", "logit", "beta_binomial", "empirical"],
+                "description": "Statistical method used for confidence calculation"
               }
             }
           }
@@ -855,6 +871,341 @@
             }
           },
           "required": ["primary"]
+        },
+        "identifiers": {
+          "type": "object",
+          "description": "Standard product identifiers",
+          "properties": {
+            "gtin": {
+              "type": "string",
+              "pattern": "^[0-9]{8,14}$",
+              "description": "Global Trade Item Number (EAN/UPC)"
+            },
+            "mpn": {
+              "type": "string",
+              "description": "Manufacturer Part Number"
+            },
+            "isbn": {
+              "type": "string",
+              "description": "ISBN for books"
+            },
+            "asin": {
+              "type": "string",
+              "description": "Amazon Standard Identification Number"
+            }
+          }
+        },
+        "taxonomy": {
+          "type": "object",
+          "description": "Product classification",
+          "properties": {
+            "google_product_category": {
+              "type": "string",
+              "description": "Google Product Taxonomy ID"
+            },
+            "hs_code": {
+              "type": "string",
+              "description": "Harmonized System tariff code"
+            },
+            "unspsc": {
+              "type": "string",
+              "description": "United Nations Standard Products and Services Code"
+            },
+            "product_type": {
+              "type": "string",
+              "description": "Merchant's own product categorization"
+            }
+          }
+        },
+        "pricing": {
+          "type": "object",
+          "description": "Extended pricing information",
+          "properties": {
+            "list_price": {
+              "$ref": "#/definitions/price"
+            },
+            "sale_price": {
+              "$ref": "#/definitions/price"
+            },
+            "tax_included": {
+              "type": "boolean",
+              "description": "Whether tax is included in the price"
+            },
+            "tax_rate": {
+              "type": "number",
+              "minimum": 0,
+              "description": "Tax rate as decimal (0.19 for 19%)"
+            },
+            "valid_from": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "valid_to": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "unit_price": {
+              "type": "object",
+              "properties": {
+                "value": { "type": "number" },
+                "unit": { "type": "string", "description": "e.g., EUR_per_100g, USD_per_liter" }
+              }
+            },
+            "regional": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "region": { "type": "string", "pattern": "^[A-Z]{2}$" },
+                  "currency": { "type": "string", "pattern": "^[A-Z]{3}$" },
+                  "value": { "type": "number", "minimum": 0 },
+                  "tax_included": { "type": "boolean" }
+                }
+              }
+            },
+            "minimum_advertised_price": {
+              "type": "number",
+              "minimum": 0,
+              "description": "MAP restriction if applicable"
+            }
+          }
+        },
+        "shipping": {
+          "type": "object",
+          "description": "Shipping and logistics information",
+          "properties": {
+            "net_weight_grams": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "ship_weight_grams": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "package_dimensions_cm": {
+              "type": "object",
+              "properties": {
+                "length": { "type": "number", "minimum": 0 },
+                "width": { "type": "number", "minimum": 0 },
+                "height": { "type": "number", "minimum": 0 }
+              }
+            },
+            "lead_time_days": {
+              "type": "object",
+              "properties": {
+                "p50": { "type": "integer", "minimum": 0 },
+                "p95": { "type": "integer", "minimum": 0 }
+              }
+            },
+            "shipping_class": {
+              "type": "string",
+              "enum": ["standard", "oversized", "freight", "small_packet", "letter"]
+            },
+            "ships_from": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "^[A-Z]{2}$"
+              }
+            }
+          }
+        },
+        "regulatory": {
+          "type": "object",
+          "description": "Regulatory and compliance information",
+          "properties": {
+            "hazmat": {
+              "type": "boolean",
+              "description": "Hazardous material flag"
+            },
+            "hazmat_class": {
+              "type": "string",
+              "description": "UN hazmat classification"
+            },
+            "battery": {
+              "type": "object",
+              "properties": {
+                "present": { "type": "boolean" },
+                "type": { "type": "string", "enum": ["lithium_ion", "lithium_metal", "alkaline", "ni_mh", "lead_acid", "other"] },
+                "watt_hours": { "type": "number" }
+              }
+            },
+            "age_rating": {
+              "type": "string",
+              "enum": ["all_ages", "3plus", "6plus", "12plus", "16plus", "18plus", "21plus"]
+            },
+            "eco_labels": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Environmental labels (Energy Star, EU Energy Label, etc.)"
+            },
+            "ce_marking": {
+              "type": "boolean"
+            },
+            "fda_approved": {
+              "type": "boolean"
+            }
+          }
+        },
+        "warranty": {
+          "type": "object",
+          "description": "Warranty information",
+          "properties": {
+            "days": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "type": {
+              "type": "string",
+              "enum": ["manufacturer", "seller", "extended", "none"]
+            },
+            "description": {
+              "type": "string"
+            },
+            "service_level": {
+              "type": "string",
+              "enum": ["repair", "replace", "refund"]
+            }
+          }
+        },
+        "b2b": {
+          "type": "object",
+          "description": "B2B specific information",
+          "properties": {
+            "moq": {
+              "type": "integer",
+              "minimum": 1,
+              "description": "Minimum order quantity"
+            },
+            "price_tiers": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "min_qty": { "type": "integer", "minimum": 1 },
+                  "price": { "type": "number", "minimum": 0 },
+                  "discount_percent": { "type": "number", "minimum": 0, "maximum": 100 }
+                }
+              }
+            },
+            "lead_time_bulk": {
+              "type": "object",
+              "properties": {
+                "days": { "type": "integer", "minimum": 0 },
+                "for_quantity": { "type": "integer", "minimum": 1 }
+              }
+            },
+            "payment_terms": {
+              "type": "string",
+              "description": "e.g., Net 30, 2/10 Net 30"
+            },
+            "incoterms": {
+              "type": "string",
+              "enum": ["EXW", "FCA", "CPT", "CIP", "DAP", "DPU", "DDP", "FAS", "FOB", "CFR", "CIF"]
+            }
+          }
+        },
+        "compatibility": {
+          "type": "object",
+          "description": "Product relationships and compatibility",
+          "properties": {
+            "works_with": {
+              "type": "array",
+              "items": { "type": "string" },
+              "description": "Compatible product IDs"
+            },
+            "requires": {
+              "type": "array",
+              "items": { "type": "string" },
+              "description": "Required products/accessories"
+            },
+            "replaces": {
+              "type": "array",
+              "items": { "type": "string" },
+              "description": "Products this item replaces"
+            },
+            "spare_parts": {
+              "type": "array",
+              "items": { "type": "string" },
+              "description": "Available spare part SKUs"
+            },
+            "bundles": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "bundle_id": { "type": "string" },
+                  "products": { "type": "array", "items": { "type": "string" } },
+                  "discount": { "type": "number", "minimum": 0 }
+                }
+              }
+            }
+          }
+        },
+        "digital": {
+          "type": "object",
+          "description": "Digital product information",
+          "properties": {
+            "license_type": {
+              "type": "string",
+              "enum": ["perpetual", "subscription", "trial", "freemium", "open_source"]
+            },
+            "delivery_method": {
+              "type": "string",
+              "enum": ["download", "email", "api", "physical_media"]
+            },
+            "platform_requirements": {
+              "type": "array",
+              "items": { "type": "string" }
+            },
+            "file_size_mb": {
+              "type": "number",
+              "minimum": 0
+            },
+            "drm": {
+              "type": "boolean"
+            },
+            "subscription": {
+              "type": "object",
+              "properties": {
+                "billing_period": { "type": "string", "enum": ["monthly", "quarterly", "yearly", "lifetime"] },
+                "auto_renewal": { "type": "boolean" },
+                "cancellation_period_days": { "type": "integer", "minimum": 0 }
+              }
+            }
+          }
+        },
+        "localization": {
+          "type": "object",
+          "description": "Localization settings",
+          "properties": {
+            "lang": {
+              "type": "string",
+              "pattern": "^[a-z]{2}$",
+              "description": "ISO 639-1 language code"
+            },
+            "market": {
+              "type": "string",
+              "pattern": "^[A-Z]{2}$",
+              "description": "Target market ISO 3166-1 alpha-2"
+            },
+            "cultural_adaptation": {
+              "type": "object",
+              "additionalProperties": { "type": "string" }
+            }
+          }
+        },
+        "last_verified": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Last verification timestamp"
+        },
+        "ttl_seconds": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Time to live for cached data"
         },
         "experience_proofs": {
           "type": "object",

@@ -7,31 +7,80 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Added
+### Added - Major Protocol Enhancements
+
+#### Schema Extensions
+- **Brand Profile**: Added legal (VAT ID, EORI, DUNS, GLN), payments (methods, chargeback rate), fulfillment (carriers, on-time rate), compliance (WEEE, RoHS, REACH), and tech stack fields
+- **Product Schema**: Added identifiers (GTIN, MPN), taxonomy (Google Product Category, HS Code), extended pricing (regional, unit price, MAP), shipping details, regulatory info, warranty, B2B features (MOQ, Incoterms), digital product support
+- **Intent Signals**: Added measurement windows, sample sizes, confidence methods (Wilson score), and statistical validation
+- **Experience Proofs**: Added cryptographic proof of customer interactions with capsules
+- **Agent Ranking Hints**: Added weighted scoring system for AI optimization
+
+#### Third-Party Integration
+- Enrichment module for Trustpilot, Trusted Shops, Google Seller Ratings, and BuiltWith
+- Anomaly detection for suspicious metric changes
+- Verifiable Credentials generation for third-party evidence
+- Provider-specific adapters with TTL and caching
+
+#### AP2 Evidence Chain
+- Public/sealed evidence separation (32KB/1MB limits)
+- Value-based evidence requirements (<€100 optional, >€1000 mandatory)
+- Encrypted sealed evidence for sensitive data
+- Evidence retention and privacy policies
+
+#### Normative Standards
+- KPI formulas document with precise calculations
+- Wilson score confidence intervals
+- Time decay functions with λ values
+- Dirichlet smoothing for sparse data
+- Anomaly detection thresholds
+
+#### MCP Tools Suite
+- Extended 15+ tools for agent interaction
+- `axp.searchCatalog` with advanced filtering
+- `axp.getEnrichmentStatus` for data freshness
+- `axp.calculateIntent` with confidence metrics
+- `axp.validateCompliance` for regulatory checks
+- `axp.getB2BTerms` with quantity-based pricing
+
+#### Conformance Profiles
+- Core Profile (mandatory minimum)
+- Retail Profile (B2C features)
+- B2B Profile (business transactions)
+- Regulated Profile (compliance-heavy)
+- Digital Profile (software/subscriptions)
+- Marketplace Profile (multi-vendor)
+
+### Added - Documentation
+- Normative specification with MUST/SHOULD/CAN requirements
+- Canonical JSON serialization rules
+- KPI_FORMULAS.md with mathematical definitions
+- PROFILES.md with conformance requirements
+- AP2_EVIDENCE_CHAIN.md for payment integration
+- Implementation guide with profile-specific examples
 - Nike Shoe V2 3D Experience Capsule with USDZ model support
 - Test harness for AXP Capsule development and debugging
-- Comprehensive schema documentation for Brand Profile with measurement guidelines
-- Detailed Product schema documentation with implementation patterns
-- Secure Handshake Protocol documentation for agent-shop authentication
-- AP2 Integration Guide showing protocol synergy and implementation patterns
-- Verifiable Credentials pattern for trust signal validation
-- Dispute evidence collection and resolution workflows
-- Intent enrichment patterns combining AXP context with AP2 mandates
-- Risk signal integration between AXP trust metrics and AP2 payment risk
 
 ### Updated
+- README with big picture architecture diagram
+- Integration with Google's AP2 (Agent Payments Protocol)
+- All examples updated with new schema fields
 - Enhanced 3D sneaker configurator with real model viewer implementation
 - Migrated from canvas-based simulation to model-viewer 3.3.0
 - Added Nike branding and premium visual design
 - Implemented dynamic pricing based on colorway selection
 
-### Documentation
-- Added measurement guides for CSAT, NPS, and return rate calculations
-- Added implementation examples for Shopware, WooCommerce, and custom platforms
-- Added security best practices for key management and session handling
-- Added monitoring and analytics patterns for integrated deployments
-- Added migration guide for AP2-enabled merchants
-- Embedded video demonstration of Experience Capsule (3D sneaker configurator) in README
+### Security
+- `last_verified` and `ttl_seconds` in all signed objects
+- Well-known endpoints for JWKS and brand profiles
+- Key rotation requirements (quarterly SHOULD)
+- Replay protection with 30-second max clock skew
+
+### Compliance
+- Test suite with golden vectors, edge cases, and invalid cases
+- Reference validator implementation
+- Canonical JSON validation
+- Profile-specific validation tools
 
 ## [0.1.0] - 2025-09-18
 
@@ -60,31 +109,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Roadmap
 
-### [0.2.0] - Planned
+### [0.2.0] - Planned Q1 2026
+- [ ] Validator CLI for profile compliance
+- [ ] Shopware 6.5+ export module
+- [ ] WooCommerce plugin
+- [ ] Real-time inventory sync via WebSocket
+- [ ] Reference implementation in Go
+
+### [0.3.0] - Planned Q2 2026
 - [ ] Advanced capsule modalities (AR, VR)
-- [ ] Real-time collaborative experiences
-- [ ] Enhanced AI agent hints
+- [ ] Federated trust network
+- [ ] Cross-merchant experience sharing
 - [ ] GraphQL API support
 - [ ] WebAssembly capsule support
 
-### [0.3.0] - Planned
-- [ ] Federated brand networks
-- [ ] Cross-merchant experience sharing
-- [ ] Blockchain provenance option
+### [0.4.0] - Planned Q3 2026
+- [ ] Blockchain anchoring for high-value transactions
+- [ ] Multi-agent collaboration protocols
 - [ ] Advanced analytics dashboard
-
-### [0.4.0] - Planned
-- [ ] Cross-agent experience state
-- [ ] Multi-party capsule interactions
 - [ ] Dynamic pricing signals
-- [ ] B2B extension
+- [ ] Cross-agent experience state
 
-### [1.0.0] - Planned
+### [1.0.0] - Planned Q4 2026
 - [ ] Production-ready release
-- [ ] Certification program
-- [ ] Reference implementations in multiple languages
-- [ ] Enterprise features
+- [ ] Certification program for merchants
+- [ ] Reference implementations in 5+ languages
+- [ ] Enterprise support packages
 - [ ] SLA guarantees
+- [ ] ISO standardization submission
 
 ---
 

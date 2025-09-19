@@ -2,6 +2,8 @@
   "spec": "axp",
   "version": "0.1.0",
   "generated_at": "2025-09-18T10:00:00Z",
+  "last_verified": "2025-09-18T09:00:00Z",
+  "ttl_seconds": 604800,
   "brand": {
     "id": "brand_001",
     "legal_name": "Urban Footwear GmbH",
@@ -56,7 +58,80 @@
         }
       ],
       "data_provenance": "signed_by_brand_key"
-    }
+    },
+    "legal": {
+      "registration_number": "HRB 12345 Berlin",
+      "vat_id": "DE123456789",
+      "eori": "DE1234567890123",
+      "duns": "123456789",
+      "legal_form": "GmbH"
+    },
+    "payments": {
+      "methods": ["paypal", "credit_card", "klarna", "invoice"],
+      "chargeback_rate": 0.004,
+      "dispute_rate": 0.009,
+      "payment_terms": {
+        "b2b_net_days": 30,
+        "early_payment_discount": 0.02
+      }
+    },
+    "fulfillment": {
+      "carriers": ["DHL", "DPD", "UPS", "FedEx"],
+      "handling_time_days_p50": 1,
+      "handling_time_days_p95": 3,
+      "on_time_delivery_rate": 0.97,
+      "ships_to": ["DE", "AT", "CH", "NL", "BE", "FR", "IT", "ES"],
+      "warehouse_locations": [
+        {"country": "DE", "city": "Berlin"},
+        {"country": "NL", "city": "Amsterdam"}
+      ]
+    },
+    "compliance": {
+      "weee_categories": ["footwear"],
+      "epr_packaging": true,
+      "rohs": true,
+      "reach": true,
+      "liability_insurance": {
+        "coverage_eur": 5000000,
+        "insurer": "Allianz",
+        "valid_until": "2026-12-31"
+      }
+    },
+    "policies": {
+      "returns": {
+        "days": 30,
+        "restocking_fee": 0.0,
+        "return_shipping_paid_by": "seller"
+      },
+      "repairs": {
+        "offered": true,
+        "warranty_repairs": true,
+        "policy_url": "https://urban-footwear.com/repair-service"
+      },
+      "sustainability": {
+        "carbon_neutral_shipping": true,
+        "recycled_packaging": true,
+        "take_back_program": true,
+        "sustainability_report_url": "https://urban-footwear.com/sustainability"
+      }
+    },
+    "tech_stack": {
+      "platform": "Shopware",
+      "platform_version": "6.5",
+      "detected": [
+        {"name": "Cloudflare", "category": "cdn"},
+        {"name": "PayPal", "category": "payment"},
+        {"name": "Google Analytics", "category": "analytics"}
+      ],
+      "detected_at": "2025-09-18T08:00:00Z",
+      "source": "builtwith"
+    },
+    "keys": {
+      "jwks_url": "https://urban-footwear.com/.well-known/axp/jwks.json",
+      "brand_profile_url": "https://urban-footwear.com/.well-known/axp/brand.json",
+      "did": "did:web:urban-footwear.com"
+    },
+    "brand_profile_strength": 0.92
   },
   "signature": {
     "alg": "RS256",
