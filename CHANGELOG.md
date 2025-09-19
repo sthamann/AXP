@@ -10,12 +10,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Nike Shoe V2 3D Experience Capsule with USDZ model support
 - Test harness for AXP Capsule development and debugging
+- Comprehensive schema documentation for Brand Profile with measurement guidelines
+- Detailed Product schema documentation with implementation patterns
+- Secure Handshake Protocol documentation for agent-shop authentication
+- AP2 Integration Guide showing protocol synergy and implementation patterns
+- Verifiable Credentials pattern for trust signal validation
+- Dispute evidence collection and resolution workflows
+- Intent enrichment patterns combining AXP context with AP2 mandates
+- Risk signal integration between AXP trust metrics and AP2 payment risk
 
 ### Updated
 - Enhanced 3D sneaker configurator with real model viewer implementation
 - Migrated from canvas-based simulation to model-viewer 3.3.0
 - Added Nike branding and premium visual design
 - Implemented dynamic pricing based on colorway selection
+
+### Documentation
+- Added measurement guides for CSAT, NPS, and return rate calculations
+- Added implementation examples for Shopware, WooCommerce, and custom platforms
+- Added security best practices for key management and session handling
+- Added monitoring and analytics patterns for integrated deployments
+- Added migration guide for AP2-enabled merchants
+- Embedded video demonstration of Experience Capsule (3D sneaker configurator) in README
 
 ## [0.1.0] - 2025-09-18
 

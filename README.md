@@ -73,6 +73,25 @@ Beyond SKU and price – uniqueness scores, craftsmanship ratings, sustainabilit
 ### 2. **Experience Capsules**
 Sandboxed, interactive micro-experiences (3D configurators, AR viewers, size advisors) that agents can safely embed and interact with via standardized PostMessage APIs.
 
+#### 🎬 Example: Interactive 3D Sneaker Experience
+
+<video width="100%" controls>
+  <source src="shoe-example.mp4" type="video/mp4">
+  Your browser does not support the video tag.
+</video>
+
+> 📹 [View Video: Interactive 3D Sneaker Configurator](shoe-example.mp4)
+
+*This video demonstrates an AXP Experience Capsule in action - a 3D sneaker configurator that allows agents and users to interact with products in rich, immersive ways. The capsule runs in a sandboxed environment with strict security policies while providing real-time configuration options and pricing updates.*
+
+**Key Features Shown:**
+- 🔄 Real-time 3D model rotation and zoom
+- 🎨 Dynamic color selection (Red, Black, White variants)
+- 📏 Size configuration with availability checking  
+- 💰 Live pricing updates based on selections
+- 🛡️ Sandboxed iframe with PostMessage API communication
+- 📱 Responsive design for cross-device compatibility
+
 ### 3. **Trust Provenance**
 Cryptographically signed data with verifiable brand attribution, ensuring agents can trust the information they consume.
 
