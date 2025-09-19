@@ -172,6 +172,22 @@
             "data_provenance": {
               "type": "string",
               "description": "Data authentication method"
+            },
+            "domain_age_days": {
+              "type": "integer",
+              "minimum": 0,
+              "description": "Domain age in days from earliest verifiable source"
+            },
+            "domain_age_confidence": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "description": "Confidence in domain age calculation"
+            },
+            "domain_age_sources": {
+              "type": "array",
+              "items": { "type": "string" },
+              "description": "Sources used for domain age verification (whois, certificate_transparency, dns_history, internet_archive)"
             }
           }
         }

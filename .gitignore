@@ -88,5 +88,13 @@ private/
 .next/
 .nuxt/
 .docusaurus/
+
+# Concatenation output
+output.txt
+
+# Local development files
 AP2.txt
-draft.md
+
+concat.sh
+
+output.txt

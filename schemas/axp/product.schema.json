@@ -5,6 +5,40 @@
   "description": "Complete product representation with experiences and trust signals",
   "type": "object",
   "required": ["product"],
+  "definitions": {
+    "price": {
+      "type": "object",
+      "required": ["currency", "value"],
+      "properties": {
+        "currency": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$",
+          "description": "ISO 4217 currency code"
+        },
+        "value": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Price value"
+        }
+      }
+    },
+    "availability": {
+      "type": "object",
+      "required": ["state"],
+      "properties": {
+        "state": {
+          "type": "string",
+          "enum": ["in_stock", "out_of_stock", "preorder", "discontinued"],
+          "description": "Availability state"
+        },
+        "quantity": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Available quantity"
+        }
+      }
+    }
+  },
   "properties": {
     "product": {
       "type": "object",
@@ -18,6 +52,27 @@
           "type": ["string", "null"],
           "description": "Parent product ID for variants"
         },
+        "slug": {
+          "type": "string",
+          "description": "URL Slug"
+        },
+        "canonical_url": {
+          "type": "string",
+          "format": "uri"
+        },
+        "brand_name": {
+          "type": "string"
+        },
+        "gtin": {
+          "type": "string"
+        },
+        "mpn": {
+          "type": "string"
+        },
+        "country_of_origin": {
+          "type": "string",
+          "pattern": "^[A-Z]{2}$"
+        },
         "title": {
           "type": "string",
           "description": "Product title"
@@ -26,6 +81,39 @@
           "type": "string",
           "maxLength": 200,
           "description": "Brief product description"
+        },
+        "full_desc": {
+          "type": "object",
+          "properties": {
+            "lang": {
+              "type": "string",
+              "pattern": "^[a-z]{2}$"
+            },
+            "text": {
+              "type": "string"
+            }
+          }
+        },
+        "feature_bullets": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "lang": {
+                "type": "string",
+                "pattern": "^[a-z]{2}$"
+              },
+              "text": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "breadcrumbs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         },
         "tech_specs": {
           "type": "object",
@@ -49,35 +137,273 @@
           },
           "additionalProperties": true
         },
+        "attributes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["name", "type", "value"],
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "code": {
+                "type": "string"
+              },
+              "type": {
+                "type": "string",
+                "enum": ["string", "number", "boolean", "enum"]
+              },
+              "unit": {
+                "type": "string"
+              },
+              "value": {},
+              "confidence": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "source": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "variant_axes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["name", "values"],
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "unit": {
+                "type": "string"
+              },
+              "values": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "variants": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["sku", "options"],
+            "properties": {
+              "sku": {
+                "type": "string"
+              },
+              "options": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "string"
+                }
+              },
+              "price": {
+                "$ref": "#/definitions/price"
+              },
+              "availability": {
+                "$ref": "#/definitions/availability"
+              },
+              "media_override": {
+                "$ref": "#/properties/product/properties/media"
+              },
+              "shipping": {
+                "type": "object",
+                "properties": {
+                  "weight_grams": {
+                    "type": "number",
+                    "minimum": 0
+                  },
+                  "dimensions_cm": {
+                    "type": "object",
+                    "properties": {
+                      "length": {
+                        "type": "number",
+                        "minimum": 0
+                      },
+                      "width": {
+                        "type": "number",
+                        "minimum": 0
+                      },
+                      "height": {
+                        "type": "number",
+                        "minimum": 0
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
         "price": {
+          "$ref": "#/definitions/price"
+        },
+        "pricing": {
           "type": "object",
-          "required": ["currency", "value"],
           "properties": {
-            "currency": {
-              "type": "string",
-              "pattern": "^[A-Z]{3}$",
-              "description": "ISO 4217 currency code"
-            },
-            "value": {
+            "msrp": {
               "type": "number",
-              "minimum": 0,
-              "description": "Price value"
+              "minimum": 0
+            },
+            "map": {
+              "type": "number",
+              "minimum": 0
+            },
+            "price_history_30d": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "ts": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "value": {
+                    "type": "number",
+                    "minimum": 0
+                  }
+                }
+              }
             }
           }
         },
         "availability": {
+          "$ref": "#/definitions/availability"
+        },
+        "relations": {
           "type": "object",
-          "required": ["state"],
           "properties": {
-            "state": {
-              "type": "string",
-              "enum": ["in_stock", "out_of_stock", "preorder", "discontinued"],
-              "description": "Availability state"
+            "compatible_with": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
             },
-            "quantity": {
-              "type": "integer",
+            "recommended_accessories": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "alternative_to": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "replacement_for": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "lifecycle": {
+          "type": "object",
+          "properties": {
+            "release_date": {
+              "type": "string",
+              "format": "date"
+            },
+            "discontinued_date": {
+              "type": "string",
+              "format": "date"
+            },
+            "support_until": {
+              "type": "string",
+              "format": "date"
+            },
+            "condition": {
+              "type": "string",
+              "enum": ["new", "refurbished", "used"]
+            }
+          }
+        },
+        "regulatory": {
+          "type": "object",
+          "properties": {
+            "hazmat": {
+              "type": "boolean"
+            },
+            "battery": {
+              "type": "boolean"
+            },
+            "age_rating": {
+              "type": "string"
+            },
+            "standards": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "compliance_docs": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "format": "uri"
+              }
+            }
+          }
+        },
+        "serviceability": {
+          "type": "object",
+          "properties": {
+            "repairability_score": {
+              "type": "number",
               "minimum": 0,
-              "description": "Available quantity"
+              "maximum": 10
+            },
+            "spare_parts_available": {
+              "type": "boolean"
+            },
+            "warranty_terms": {
+              "type": "string"
+            }
+          }
+        },
+        "content_quality": {
+          "type": "object",
+          "properties": {
+            "image_count": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "image_coverage_score": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "model_coverage_score": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            }
+          }
+        },
+        "text_embeddings": {
+          "type": "object",
+          "properties": {
+            "desc_embedding": {
+              "type": "object",
+              "properties": {
+                "dim": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "vector": {
+                  "type": "string",
+                  "description": "Base64 Float32"
+                }
+              }
             }
           }
         },
@@ -248,6 +574,30 @@
               "minimum": 0,
               "maximum": 1
             },
+            "fit_hint_score": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "description": "Score based on size-related returns and sizing guidance"
+            },
+            "reliability_score": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "description": "Score based on defect rate and warranty claims"
+            },
+            "performance_score": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "description": "Product-specific performance benchmarks"
+            },
+            "owner_satisfaction_score": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "description": "Weighted mix of verified reviews and product CSAT"
+            },
             "evidence": {
               "type": "array",
               "items": {
@@ -285,6 +635,20 @@
                   "type": "integer",
                   "minimum": 0
                 },
+                "count_verified": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "distribution": {
+                  "type": "object",
+                  "properties": {
+                    "5": { "type": "integer", "minimum": 0 },
+                    "4": { "type": "integer", "minimum": 0 },
+                    "3": { "type": "integer", "minimum": 0 },
+                    "2": { "type": "integer", "minimum": 0 },
+                    "1": { "type": "integer", "minimum": 0 }
+                  }
+                },
                 "top_positive": {
                   "type": "array",
                   "items": {
@@ -295,6 +659,31 @@
                   "type": "array",
                   "items": {
                     "type": "string"
+                  }
+                },
+                "verification": {
+                  "type": "object",
+                  "properties": {
+                    "method": {
+                      "type": "string",
+                      "enum": ["api", "snapshot", "attested", "verifiable_credential", "webhook", "signed_file"]
+                    },
+                    "last_checked": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "source_signature": {
+                      "type": "string"
+                    },
+                    "anomalies": {
+                      "type": "array",
+                      "items": { "type": "string" }
+                    },
+                    "confidence": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 1
+                    }
                   }
                 }
               }
@@ -336,12 +725,26 @@
             "properties": {
               "intent": {
                 "type": "string",
-                "enum": ["gift", "daily_commute", "hobby", "professional_use", "travel", "fashion", "sport", "basketball"]
+                "enum": ["gift", "daily_commute", "hobby", "professional_use", "travel", "fashion", "sport", "basketball", "running", "outdoor", "luxury", "value"]
               },
               "share": {
                 "type": "number",
                 "minimum": 0,
                 "maximum": 1
+              },
+              "confidence": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "method": {
+                "type": "string",
+                "description": "How the intent was derived"
+              },
+              "evidence": {
+                "type": "array",
+                "items": { "type": "string" },
+                "description": "Supporting evidence for this intent"
               }
             }
           }
@@ -410,6 +813,35 @@
               "type": "array",
               "items": {
                 "type": "string"
+              }
+            },
+            "context": {
+              "type": "object",
+              "properties": {
+                "running": {
+                  "type": "array",
+                  "items": { "type": "string" }
+                },
+                "fashion": {
+                  "type": "array",
+                  "items": { "type": "string" }
+                },
+                "eco": {
+                  "type": "array",
+                  "items": { "type": "string" }
+                },
+                "luxury_shopping": {
+                  "type": "array",
+                  "items": { "type": "string" }
+                },
+                "value_shopping": {
+                  "type": "array",
+                  "items": { "type": "string" }
+                },
+                "sustainable_shopping": {
+                  "type": "array",
+                  "items": { "type": "string" }
+                }
               }
             }
           }

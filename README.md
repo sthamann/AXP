@@ -1,77 +1,111 @@
-# AXP - Agentic Experience Protocol
+# 🛍️ AXP: Agentic Experience Protocol
 
-![AXP Version](https://img.shields.io/badge/AXP-v0.1.0-blue)
-![Status](https://img.shields.io/badge/Status-Draft-yellow)
-![License](https://img.shields.io/badge/License-MIT-green)
+**An open protocol making commerce experiences machine-readable for AI agents.**
 
-## 🎯 Mission
+AXP enables uniqueness, trust, differentiation, and interactive experiences beyond traditional e-commerce, designed for the agent economy with deep integration to payment protocols like AP2.
 
-**Making commerce experiences machine-readable for the agentic era.**
+## 🎯 Why AXP?
 
-AXP (Agentic Experience Protocol) is a standardized data format and minimal MCP interface that enables AI agents to understand not just price and inventory, but the complete story of products and brands – their uniqueness, trust signals, differentiation factors, and rich interactive experiences.
+AI agents need structured, verifiable data to make confident purchasing decisions. AXP provides:
 
-## 🔍 Why AXP?
+- **🎨 Rich Experiences**: Interactive 3D configurators, AR try-ons, and immersive previews
+- **🔍 Deep Intent Understanding**: Precise signals from behavior, text, and context
+- **✅ Verifiable Trust**: Cryptographic proofs, anomaly detection, and multi-source validation
+- **📊 Intelligent Scoring**: Sophisticated KPIs calculated from measurable sub-factors
+- **🔒 Secure Interactions**: Sandboxed capsules with strict CSP and rate limiting
+- **💰 Payment Ready**: Seamless AP2 integration for autonomous transactions
 
-In the age of AI agents, commerce is fundamentally changing. Agents need more than basic product data – they need to understand:
+## 🏗️ Project Structure
 
-- **Trust & Authenticity**: Verified reviews, certifications, return rates
-- **Uniqueness & Differentiation**: What makes this product special?
-- **Rich Experiences**: 3D configurators, AR try-ons, interactive demos
-- **Brand Story**: Values, sustainability, craftsmanship signals
-- **Customer Intent**: Why people buy and what they use it for
-
-## 🏗️ Architecture Overview
-
-```mermaid
-graph TB
-    subgraph "Commerce Platform"
-        CP[Commerce Backend]
-        BR[Brand Data]
-        PR[Product Catalog]
-        EX[Experience Capsules]
-        RV[Reviews & Ratings]
-    end
-    
-    subgraph "AXP Layer"
-        AXP[AXP Protocol]
-        MCP[MCP Server]
-        SEC[Security & Sandbox]
-        SIGN[Provenance & Signing]
-    end
-    
-    subgraph "Agent Ecosystem"
-        AG1[Shopping Agent]
-        AG2[Comparison Agent]
-        AG3[Advisory Agent]
-        AG4[Discovery Agent]
-    end
-    
-    CP --> AXP
-    BR --> AXP
-    PR --> AXP
-    EX --> AXP
-    RV --> AXP
-    
-    AXP --> MCP
-    AXP --> SEC
-    AXP --> SIGN
-    
-    MCP --> AG1
-    MCP --> AG2
-    MCP --> AG3
-    MCP --> AG4
-    
-    style AXP fill:#f9f,stroke:#333,stroke-width:4px
-    style MCP fill:#bbf,stroke:#333,stroke-width:2px
+```
+AXP/
+├── schemas/axp/                # JSON Schema definitions
+│   ├── brand_profile.schema.json   # Brand identity with trust signals
+│   ├── product.schema.json         # Complete product with 50+ fields
+│   ├── review.schema.json          # Structured review data
+│   └── experience_capsule.schema.json # Interactive experience manifest
+│
+├── src/
+│   ├── server/
+│   │   ├── index.ts            # MCP server implementation
+│   │   └── extended-tools.ts   # Extended MCP tools for variants
+│   ├── types/
+│   │   ├── index.ts            # TypeScript type definitions
+│   │   └── models.py           # Pydantic models with validation
+│   └── pipeline/               # Data extraction and processing
+│       ├── intent_extractor.py # Intent signal extraction
+│       ├── kpi_calculator.py   # Soft KPI calculations
+│       └── trust_verifier.py   # Trust signal verification
+│
+├── examples/
+│   ├── data/
+│   │   ├── brand_profile.json      # Example brand with metrics
+│   │   ├── catalog_products.jsonl  # Products with variants
+│   │   └── ratings_reviews.jsonl   # Review examples
+│   └── capsules/
+│       └── sneaker-3d/         # 3D configurator example
+│           ├── manifest.json   # Capsule manifest
+│           ├── index.html      # Main experience
+│           └── nike.glb        # 3D model
+│
+├── docs/
+│   ├── schemas/
+│   │   ├── BRAND_PROFILE.md   # Brand schema documentation
+│   │   └── PRODUCT.md         # Product schema documentation
+│   ├── SECURE_HANDSHAKE.md    # Agent-shop authentication
+│   ├── AP2_INTEGRATION.md     # Payment protocol integration
+│   ├── DISPUTE_EVIDENCE.md    # Dispute resolution framework
+│   └── VERIFIABLE_CREDENTIALS.md # VC implementation guide
+│
+├── scripts/
+│   └── create-bundle.js       # Export bundle generator
+│
+└── tests/                      # Test suites
 ```
 
-## 🎨 Core Concepts
+## 📦 Core Data Model
 
-### 1. **Rich Product Context**
-Beyond SKU and price – uniqueness scores, craftsmanship ratings, sustainability metrics, and evidence-backed quality signals.
+### 1. Products with Variants
 
-### 2. **Experience Capsules**
-Sandboxed, interactive micro-experiences (3D configurators, AR viewers, size advisors) that agents can safely embed and interact with via standardized PostMessage APIs.
+```json
+{
+  "product": {
+    "id": "sku_123",
+    "title": "Premium Running Shoe",
+    "variant_axes": [
+      {"name": "color", "values": ["red", "black", "white"]},
+      {"name": "size", "unit": "EU", "values": ["40", "41", "42"]}
+    ],
+    "variants": [
+      {
+        "sku": "sku_123_red_42",
+        "options": {"color": "red", "size": "42"},
+        "price": {"currency": "EUR", "value": 129.90},
+        "availability": {"state": "in_stock", "quantity": 45}
+      }
+    ],
+    "soft_signals": {
+      "fit_hint_score": 0.68,
+      "reliability_score": 0.88,
+      "performance_score": 0.72,
+      "owner_satisfaction_score": 0.81
+    },
+    "intent_signals": [
+      {
+        "intent": "running",
+        "share": 0.42,
+        "confidence": 0.85,
+        "method": "mixed_weights",
+        "evidence": ["text:0.45", "behavior:0.38"]
+      }
+    ]
+  }
+}
+```
+
+### 2. Experience Capsules
+
+Sandboxed, interactive micro-experiences that run securely in agent environments.
 
 #### 🎬 Example: Interactive 3D Sneaker Experience
 
@@ -92,202 +126,222 @@ Sandboxed, interactive micro-experiences (3D configurators, AR viewers, size adv
 - 🛡️ Sandboxed iframe with PostMessage API communication
 - 📱 Responsive design for cross-device compatibility
 
-### 3. **Trust Provenance**
-Cryptographically signed data with verifiable brand attribution, ensuring agents can trust the information they consume.
+### 3. Intent & Trust Signals
 
-### 4. **Intent Signals**
-Understanding why customers buy – for daily commute, as a gift, for professional use – enabling better agent recommendations.
+#### Intent Extraction Pipeline
 
-## 📦 Data Model
-
-```mermaid
-erDiagram
-    BrandProfile ||--o{ Product : publishes
-    Product ||--o{ ExperienceCapsule : contains
-    Product ||--o{ Review : has
-    Product ||--o{ TrustSignal : provides
-    Product ||--o{ IntentSignal : indicates
-    
-    BrandProfile {
-        string id
-        string legal_name
-        int founded_year
-        array certifications
-        float nps
-        float csat
+```python
+# Multi-source intent extraction
+extractor = IntentExtractor()
+signals = extractor.compute_intent_signals(
+    product_id='sku_123',
+    data_sources={
+        'orders': [...],       # Gift wrap, bundles
+        'returns': [...],      # Size issues
+        'events': [...],       # 3D viewer usage
+        'texts': [...],        # Reviews, Q&A
+        'acquisitions': [...]  # Campaign data
     }
-    
-    Product {
-        string id
-        string title
-        object price
-        object availability
-        float uniqueness_score
-        float sustainability_score
-        object trust_signals
-    }
-    
-    ExperienceCapsule {
-        string id
-        string capsule_uri
-        string modality
-        object sandbox_policy
-        object api_contract
-    }
-    
-    Review {
-        string product_id
-        float rating
-        string text
-        bool verified_purchase
-        object aspects
-    }
+)
 ```
 
-## 🚀 Quick Start
+#### Trust Verification
 
-### Installation
-
-```bash
-# Clone the repository
-git clone https://github.com/yourusername/axp-protocol
-cd axp-protocol
-
-# Install dependencies
-npm install
-
-# Start the MCP server
-npm run server:start
-
-# In another terminal, run example client
-npm run demo:client
+```python
+# Verify external review source
+verifier = TrustVerifier()
+result = verifier.verify_review_source(
+    source='trustpilot',
+    business_id='example-store',
+    expected_stats={'avg_rating': 4.5, 'total_reviews': 1200}
+)
+# Returns: confidence score, anomalies, verification method
 ```
 
-### Basic Usage
+## 🧮 KPI Calculation System
 
-```typescript
-// Example: Search for unique, sustainable products
-const results = await axp.searchCatalog({
-  query: "sneakers",
-  filters: {
-    soft_min: {
-      uniqueness_score: 0.7,
-      sustainability_score: 0.6
-    },
-    availability: ["in_stock"]
-  },
-  limit: 10
-});
+### Precise Soft Signal Computation
 
-// Get detailed product with experiences
-const product = await axp.getProduct("sku_123");
+All scores normalized 0-1, category-relative, with evidence tracking:
 
-// Embed interactive experience capsule
-const capsule = await axp.getCapsule("cap_sneaker_3d");
-// Returns sandboxed iframe configuration
-```
+#### Fit Hint Score
+- Return rate due to size (inverse correlation)
+- Size advisor usage before purchase
+- Positive fit mentions in verified reviews
+- Exchange to different size rate
 
-## 🔧 Tools & APIs
+#### Reliability Score  
+- RMA per 1000 units sold
+- Mean time between failures (MTBF)
+- Warranty claim rate
+- Durability aspect in reviews
 
-AXP exposes the following MCP tools:
+#### Performance Score
+Domain-specific benchmarks:
+- **Footwear**: Energy return %, weight, cushioning
+- **Electronics**: Benchmark percentile, efficiency, latency
+- **Apparel**: Color fastness, fabric weight, abrasion
 
-| Tool | Description |
-|------|-------------|
-| `axp.getBrandProfile` | Retrieve complete brand information including trust signals |
-| `axp.searchCatalog` | Search products with rich filtering on soft signals |
-| `axp.getProduct` | Get full product details including experiences and trust data |
-| `axp.getExport` | Download complete catalog as signed bundle |
-| `axp.getCapsule` | Retrieve sandboxed experience capsule |
-| `axp.subscribeInventory` | Real-time inventory updates |
+#### Owner Satisfaction
+- Weighted verified reviews (1.5x weight)
+- Product-specific CSAT
+- Recent sentiment trend (90d vs previous)
+- Repeat purchase rate
 
-## 🛡️ Security & Privacy
+## 🔐 Security Model
 
-- **Sandboxed Experiences**: Strict CSP policies, no cookies, limited network access
-- **Signed Provenance**: All data cryptographically signed by brand keys
-- **No PII**: Protocol explicitly excludes personal data
-- **Rate Limiting**: Built-in abuse prevention
-
-## 🔗 Integration with AP2
-
-AXP complements the [Agentic Payment Protocol (AP2)](https://github.com/agentic-commerce/ap2) perfectly:
-
-```mermaid
-graph LR
-    AXP[AXP: Discovery & Experience] --> AGENT[AI Agent]
-    AGENT --> AP2[AP2: Cart & Payment]
-    
-    style AXP fill:#f9f,stroke:#333,stroke-width:2px
-    style AP2 fill:#9f9,stroke:#333,stroke-width:2px
-```
-
-- **AXP** provides context, trust, differentiation, and experiences
-- **AP2** handles intent mandates, cart mandates, and payment execution
-- Together: Complete agentic commerce stack
-
-## 📊 Example Data
+### Experience Capsule Sandboxing
 
 ```json
 {
-  "product": {
-    "id": "sku_123",
-    "title": "Classic High Top Sneaker Red",
-    "price": {"currency": "EUR", "value": 129.90},
-    "soft_signals": {
-      "uniqueness_score": 0.82,
-      "craftsmanship_score": 0.76,
-      "sustainability_score": 0.61,
-      "evidence": [
-        {
-          "kind": "certification",
-          "name": "Leather Working Group",
-          "url": "https://..."
-        }
-      ]
+  "sandbox_policy": {
+    "dom": true,
+    "storage": "session",
+    "network": {
+      "allow": ["https://cdn.example.com/"],
+      "block_all_others": true
     },
-    "trust_signals": {
-      "review_summary": {
-        "avg_rating": 4.5,
-        "count_total": 1342,
-        "top_positive": ["Comfort", "Looks"],
-        "top_negative": ["Runs small"]
-      },
-      "return_rate": 0.14
-    },
-    "experiences": {
-      "capsules": [{
-        "id": "cap_sneaker_3d",
-        "title": "3D configurator",
-        "modality": "canvas3d"
-      }]
+    "lifetime_seconds": 600,
+    "permissions": []
+  }
+}
+```
+
+### Trust Verification Methods
+
+1. **API with Signature**: Official platform APIs with HMAC
+2. **Snapshot with Hash**: SHA-256 of fetched data + timestamp
+3. **Verifiable Credentials**: W3C VCs with proof verification
+4. **Domain Age**: Multi-source verification (WHOIS, CT logs, DNS, Archive)
+
+## 🚀 Quick Start
+
+### Install Dependencies
+
+```bash
+# Node.js dependencies
+npm install
+
+# Python dependencies  
+pip install -r requirements.txt
+```
+
+### Start MCP Server
+
+```bash
+npm run serve
+```
+
+### Run Pipeline Examples
+
+```python
+# Extract intent signals
+python src/pipeline/intent_extractor.py
+
+# Calculate KPIs
+python src/pipeline/kpi_calculator.py
+
+# Verify trust signals
+python src/pipeline/trust_verifier.py
+```
+
+## 🔧 MCP Tools
+
+Extended tool suite for complete product interaction:
+
+### Core Tools
+- `axp.getBrandProfile` - Brand data with trust metrics
+- `axp.searchCatalog` - Product search with soft signal filtering
+- `axp.getProduct` - Complete product details
+
+### Variant Management
+- `axp.listExperiences` - Available capsules for product
+- `axp.getVariantMatrix` - Axes and SKU mapping
+- `axp.resolveVariant` - Options to specific SKU
+
+### Trust & Signals
+- `axp.getSignals` - All soft/trust signals with evidence
+- `axp.getProductRelations` - Accessories, alternatives
+- `axp.requestExperienceSession` - Sandboxed capsule session
+
+## 🔄 AP2 Integration
+
+Seamless integration with Agent Payments Protocol:
+
+```json
+{
+  "intent_mandate": {
+    "intent": "buy running shoes",
+    "context": {
+      "axp_signals": {
+        "performance_score": 0.93,
+        "fit_hint_score": 0.73
+      }
     }
   }
 }
 ```
 
-## 🎯 Roadmap
+## 📊 SQL Query Examples
 
-- [x] v0.1 - Core protocol definition
-- [ ] v0.2 - Advanced capsule modalities (AR, AI advisor)
-- [ ] v0.3 - Federated brand networks
-- [ ] v0.4 - Cross-agent experience state
-- [ ] v1.0 - Production ready
+### Intent from Returns
+```sql
+SELECT 
+  product_id,
+  SUM(CASE WHEN return_reason = 'size_issue' THEN 1 ELSE 0 END)::FLOAT
+    / NULLIF(COUNT(*), 0) AS p_size_issue
+FROM returns
+WHERE return_date >= CURRENT_DATE - INTERVAL '180 days'
+GROUP BY product_id;
+```
+
+### Gift Proxy
+```sql
+SELECT
+  product_id,
+  AVG(CASE WHEN gift_wrap = TRUE OR gift_message IS NOT NULL 
+      THEN 1 ELSE 0 END) AS p_gift
+FROM order_items oi
+JOIN orders o ON o.id = oi.order_id
+WHERE o.created_at >= CURRENT_DATE - INTERVAL '365 days'
+GROUP BY product_id;
+```
+
+## 🏛️ Architecture Principles
+
+1. **Privacy First**: No PII in protocol, only aggregates
+2. **Verifiable**: All claims backed by cryptographic proofs
+3. **Extensible**: JSON Schema allows custom extensions
+4. **Performant**: Optimized for real-time agent queries
+5. **Interoperable**: Works with existing e-commerce platforms
+
+## 📈 Roadmap
+
+- [x] Core protocol v0.1
+- [x] Intent extraction pipeline
+- [x] KPI calculation system
+- [x] Trust verification framework
+- [x] Variant management
+- [ ] AR/VR capsules
+- [ ] Real-time inventory sync
+- [ ] Federated trust network
+- [ ] Multi-agent collaboration
 
 ## 🤝 Contributing
 
-We welcome contributions! Please see [CONTRIBUTING.md](docs/CONTRIBUTING.md) for guidelines.
+See [CONTRIBUTING.md](docs/CONTRIBUTING.md) for guidelines.
 
 ## 📄 License
 
-MIT License - see [LICENSE](LICENSE) for details.
+MIT License - See [LICENSE](LICENSE) for details.
 
 ## 🔗 Links
 
-- [Full Specification](docs/SPECIFICATION.md)
+- [Protocol Specification](docs/SPECIFICATION.md)
 - [Integration Guide](docs/INTEGRATION.md)
 - [Security Model](docs/SECURITY.md)
-- [Example Implementation](examples/)
-- [MCP Server](src/server/)
+- [AP2 Protocol](https://github.com/Anthropic/ap2)
 
 ---
 
-**AXP** - Transforming commerce into experiences agents can understand, trust, and act upon.
+Built with ❤️ for the agent economy. Making commerce intelligent, one transaction at a time.

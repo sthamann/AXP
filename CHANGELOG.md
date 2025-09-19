@@ -57,38 +57,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Sandboxed iframe execution for capsules
 - Rate limiting on API endpoints
 
-## [0.1.0] - 2025-09-18
-
-### Added
-- Initial release of AXP Protocol
-- Core data models:
-  - Brand Profile with trust signals
-  - Product catalog with soft signals
-  - Review aggregation
-  - Experience Capsules
-  - Export bundles
-- MCP Tools:
-  - `axp.getBrandProfile` - Retrieve brand information
-  - `axp.searchCatalog` - Search with soft signal filtering  
-  - `axp.getProduct` - Get detailed product data
-  - `axp.getExport` - Download signed bundles
-  - `axp.getCapsule` - Retrieve experience configurations
-  - `axp.subscribeInventory` - Real-time inventory updates
-  - `axp.health` - Server health check
-- Scoring system:
-  - Uniqueness score
-  - Craftsmanship score
-  - Sustainability score
-  - Innovation score
-- PostMessage API for capsule communication
-- Controlled vocabularies for standardization
-- GDPR-compliant privacy model (no PII)
-- Multi-language support
-
-### Known Issues
-- Capsule resource monitoring is conceptual (browser limitations)
-- Inventory subscriptions not fully implemented
-- Mock signatures (real crypto implementation needed for production)
 
 ## Roadmap
 

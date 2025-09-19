@@ -15,6 +15,7 @@ import { join, dirname } from "path";
 import { fileURLToPath } from "url";
 import { createHash } from "crypto";
 import { z } from "zod";
+import { extendedTools, ExtendedHandlers } from "./extended-tools.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -114,6 +115,14 @@ class InMemoryStore {
 
   getBrandProfile() {
     return this.brandProfile;
+  }
+  
+  getProduct(productId: string): any {
+    return this.products.get(productId);
+  }
+  
+  getCapsule(capsuleId: string): any {
+    return this.capsules.get(capsuleId);
   }
 
   searchProducts(query?: string, filters?: any, limit = 20, cursor?: string) {
@@ -251,9 +260,11 @@ const SubscribeInventorySchema = z.object({
 class AXPServer {
   private server: Server;
   private store: InMemoryStore;
+  private extendedHandlers: ExtendedHandlers;
 
   constructor() {
     this.store = new InMemoryStore();
+    this.extendedHandlers = new ExtendedHandlers(this.store);
     this.server = new Server(
       {
         name: "axp-protocol-server",
@@ -301,6 +312,24 @@ class AXPServer {
 
           case "axp.health":
             return this.handleHealth();
+            
+          case "axp.listExperiences":
+            return this.extendedHandlers.handleListExperiences(args);
+            
+          case "axp.getVariantMatrix":
+            return this.extendedHandlers.handleGetVariantMatrix(args);
+            
+          case "axp.resolveVariant":
+            return this.extendedHandlers.handleResolveVariant(args);
+            
+          case "axp.getProductRelations":
+            return this.extendedHandlers.handleGetProductRelations(args);
+            
+          case "axp.getSignals":
+            return this.extendedHandlers.handleGetSignals(args);
+            
+          case "axp.requestExperienceSession":
+            return this.extendedHandlers.handleRequestExperienceSession(args);
 
           default:
             throw new Error(`Unknown tool: ${name}`);
@@ -430,7 +459,8 @@ class AXPServer {
           type: "object",
           properties: {}
         }
-      }
+      },
+      ...extendedTools
     ];
   }
 

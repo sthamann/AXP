@@ -3,7 +3,7 @@ AXP Protocol Pydantic Models
 Version: 0.1.0
 """
 
-from datetime import datetime
+from datetime import datetime, date
 from typing import Optional, List, Dict, Any, Union, Literal
 from enum import Enum
 from pydantic import BaseModel, Field, HttpUrl, validator, conint, confloat
@@ -61,6 +61,7 @@ class CustomerIntent(str, Enum):
     FASHION = "fashion"
     SPORT = "sport"
     BASKETBALL = "basketball"
+    RUNNING = "running"
 
 
 class StorageType(str, Enum):
@@ -87,6 +88,19 @@ class AgentRole(str, Enum):
     BRAND = "brand"
     CATALOG = "catalog"
     EXPERIENCE_PROVIDER = "experience_provider"
+
+
+class AttributeType(str, Enum):
+    STRING = "string"
+    NUMBER = "number"
+    BOOLEAN = "boolean"
+    ENUM = "enum"
+
+
+class ProductCondition(str, Enum):
+    NEW = "new"
+    REFURBISHED = "refurbished"
+    USED = "used"
 
 
 # ============================================================================
@@ -222,12 +236,29 @@ class SoftSignals(BaseModel):
     craftsmanship_score: Optional[confloat(ge=0, le=1)] = None
     sustainability_score: Optional[confloat(ge=0, le=1)] = None
     innovation_score: Optional[confloat(ge=0, le=1)] = None
+    fit_hint_score: Optional[confloat(ge=0, le=1)] = Field(None, description="Score based on size-related returns and sizing guidance")
+    reliability_score: Optional[confloat(ge=0, le=1)] = Field(None, description="Score based on defect rate and warranty claims")
+    performance_score: Optional[confloat(ge=0, le=1)] = Field(None, description="Product-specific performance benchmarks")
+    owner_satisfaction_score: Optional[confloat(ge=0, le=1)] = Field(None, description="Weighted mix of verified reviews and product CSAT")
     evidence: Optional[List[Evidence]] = None
+
+
+class ReviewDistribution(BaseModel):
+    five: Optional[int] = Field(None, ge=0, alias="5")
+    four: Optional[int] = Field(None, ge=0, alias="4")
+    three: Optional[int] = Field(None, ge=0, alias="3")
+    two: Optional[int] = Field(None, ge=0, alias="2")
+    one: Optional[int] = Field(None, ge=0, alias="1")
+
+    class Config:
+        allow_population_by_field_name = True
 
 
 class ReviewSummary(BaseModel):
     avg_rating: Optional[confloat(ge=0, le=5)] = None
     count_total: Optional[int] = Field(None, ge=0)
+    count_verified: Optional[int] = Field(None, ge=0)
+    distribution: Optional[ReviewDistribution] = None
     top_positive: Optional[List[str]] = None
     top_negative: Optional[List[str]] = None
 
@@ -270,9 +301,19 @@ class Provenance(BaseModel):
     signature: Optional[str] = None
 
 
+class RankingContext(BaseModel):
+    running: Optional[List[str]] = None
+    fashion: Optional[List[str]] = None
+    eco: Optional[List[str]] = None
+    luxury_shopping: Optional[List[str]] = None
+    value_shopping: Optional[List[str]] = None
+    sustainable_shopping: Optional[List[str]] = None
+
+
 class AgentRankingHint(BaseModel):
     primary: Optional[List[str]] = None
     secondary: Optional[List[str]] = None
+    context: Optional[RankingContext] = None
 
 
 class TechSpecs(BaseModel):
@@ -285,14 +326,119 @@ class TechSpecs(BaseModel):
         extra = "allow"  # Allow additional fields
 
 
+# New Models for Extended Schema
+
+class Attribute(BaseModel):
+    name: str
+    code: Optional[str] = None
+    type: AttributeType
+    unit: Optional[str] = None
+    value: Any
+    confidence: Optional[confloat(ge=0, le=1)] = None
+    source: Optional[str] = None
+
+
+class VariantAxis(BaseModel):
+    name: str
+    unit: Optional[str] = None
+    values: List[str]
+
+
+class ShippingInfo(BaseModel):
+    weight_grams: Optional[float] = Field(None, ge=0)
+    dimensions_cm: Optional[Dict[str, float]] = None
+
+
+class Variant(BaseModel):
+    sku: str
+    options: Dict[str, str]
+    price: Optional[Price] = None
+    availability: Optional[Availability] = None
+    media_override: Optional[Media] = None
+    shipping: Optional[ShippingInfo] = None
+
+
+class Relations(BaseModel):
+    compatible_with: Optional[List[str]] = None
+    recommended_accessories: Optional[List[str]] = None
+    alternative_to: Optional[List[str]] = None
+    replacement_for: Optional[List[str]] = None
+
+
+class Lifecycle(BaseModel):
+    release_date: Optional[date] = None
+    discontinued_date: Optional[date] = None
+    support_until: Optional[date] = None
+    condition: Optional[ProductCondition] = None
+
+
+class Regulatory(BaseModel):
+    hazmat: Optional[bool] = None
+    battery: Optional[bool] = None
+    age_rating: Optional[str] = None
+    standards: Optional[List[str]] = None
+    compliance_docs: Optional[List[HttpUrl]] = None
+
+
+class PricePoint(BaseModel):
+    ts: datetime
+    value: float = Field(..., ge=0)
+
+
+class Pricing(BaseModel):
+    msrp: Optional[float] = Field(None, ge=0)
+    map: Optional[float] = Field(None, ge=0)
+    price_history_30d: Optional[List[PricePoint]] = None
+
+
+class Serviceability(BaseModel):
+    repairability_score: Optional[confloat(ge=0, le=10)] = None
+    spare_parts_available: Optional[bool] = None
+    warranty_terms: Optional[str] = None
+
+
+class ContentQuality(BaseModel):
+    image_count: Optional[int] = Field(None, ge=0)
+    image_coverage_score: Optional[confloat(ge=0, le=1)] = None
+    model_coverage_score: Optional[confloat(ge=0, le=1)] = None
+
+
+class TextEmbedding(BaseModel):
+    dim: int = Field(..., ge=1)
+    vector: str = Field(..., description="Base64 Float32")
+
+
+class TextEmbeddings(BaseModel):
+    desc_embedding: Optional[TextEmbedding] = None
+
+
 class Product(BaseModel):
     id: str
     parent_id: Optional[str] = None
+    slug: Optional[str] = None
+    canonical_url: Optional[HttpUrl] = None
+    brand_name: Optional[str] = None
+    gtin: Optional[str] = None
+    mpn: Optional[str] = None
+    country_of_origin: Optional[str] = Field(None, pattern="^[A-Z]{2}$")
     title: str
     short_desc: Optional[str] = Field(None, max_length=200)
+    full_desc: Optional[LocalizedText] = None
+    feature_bullets: Optional[List[LocalizedText]] = None
+    breadcrumbs: Optional[List[str]] = None
     tech_specs: Optional[TechSpecs] = None
+    attributes: Optional[List[Attribute]] = None
+    variant_axes: Optional[List[VariantAxis]] = None
+    variants: Optional[List[Variant]] = None
     price: Price
+    pricing: Optional[Pricing] = None
     availability: Availability
+    relations: Optional[Relations] = None
+    lifecycle: Optional[Lifecycle] = None
+    regulatory: Optional[Regulatory] = None
+    serviceability: Optional[Serviceability] = None
+    content_quality: Optional[ContentQuality] = None
+    text_embeddings: Optional[TextEmbeddings] = None
     media: Optional[Media] = None
     experiences: Optional[Experiences] = None
     soft_signals: Optional[SoftSignals] = None
@@ -428,6 +574,10 @@ class SoftMinFilters(BaseModel):
     craftsmanship_score: Optional[confloat(ge=0, le=1)] = None
     sustainability_score: Optional[confloat(ge=0, le=1)] = None
     innovation_score: Optional[confloat(ge=0, le=1)] = None
+    fit_hint_score: Optional[confloat(ge=0, le=1)] = None
+    reliability_score: Optional[confloat(ge=0, le=1)] = None
+    performance_score: Optional[confloat(ge=0, le=1)] = None
+    owner_satisfaction_score: Optional[confloat(ge=0, le=1)] = None
 
 
 class SearchFilters(BaseModel):
@@ -496,6 +646,67 @@ class InventoryUpdateEvent(BaseModel):
 class HealthOutput(BaseModel):
     status: Literal["ok", "degraded", "error"]
     version: str
+
+
+# New MCP Tool Models
+
+class ListExperiencesInput(BaseModel):
+    product_id: str
+
+
+class ListExperiencesOutput(BaseModel):
+    experiences: List[ExperienceCapsuleRef]
+
+
+class GetVariantMatrixInput(BaseModel):
+    product_id: str
+
+
+class GetVariantMatrixOutput(BaseModel):
+    axes: List[VariantAxis]
+    variants: List[Variant]
+
+
+class ResolveVariantInput(BaseModel):
+    product_id: str
+    options: Dict[str, str]
+
+
+class ResolveVariantOutput(BaseModel):
+    sku: str
+    price: Price
+    availability: Availability
+    media: Optional[Media] = None
+
+
+class GetProductRelationsInput(BaseModel):
+    product_id: str
+
+
+class GetProductRelationsOutput(BaseModel):
+    relations: Relations
+
+
+class GetSignalsInput(BaseModel):
+    product_id: str
+
+
+class GetSignalsOutput(BaseModel):
+    soft_signals: SoftSignals
+    trust_signals: ProductTrustSignals
+    content_quality: ContentQuality
+
+
+class RequestExperienceSessionInput(BaseModel):
+    capsule_id: str
+    product_id: str
+    params: Optional[Dict[str, Any]] = None
+
+
+class RequestExperienceSessionOutput(BaseModel):
+    session_token: str
+    sandbox_embed: SandboxEmbed
+    expires_at: datetime
 
 
 # ============================================================================
